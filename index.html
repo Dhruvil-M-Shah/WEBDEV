@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Ticket System - Cinematic Experience</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: transparent;
+        }
+
+        /* Vintage Frame */
+        .vintage-frame {
+            border: 2px solid var(--ink-brown);
+            padding: 60px;
+            position: relative;
+            background: rgba(245, 237, 214, 0.4);
+            backdrop-filter: blur(10px);
+            box-shadow: inset 0 0 40px rgba(59, 42, 26, 0.1), 0 10px 30px rgba(59, 42, 26, 0.15);
+        }
+
+        .vintage-frame::before {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            right: 6px;
+            bottom: 6px;
+            border: 1px dashed var(--accent-color);
+            pointer-events: none;
+        }
+
+        .film-reel-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px auto;
+            display: block;
+            fill: var(--ink-brown);
+            opacity: 0.8;
+            filter: drop-shadow(2px 2px 0px var(--accent-color));
+        }
+
+        .splash-hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .splash-content {
+            max-width: 800px;
+            padding: 0 40px;
+            animation: floatUp 1.5s ease-out forwards;
+            opacity: 0;
+            transform: translateY(40px);
+            position: relative;
+        }
+
+        @keyframes floatUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .splash-logo {
+            font-family: var(--font-display);
+            font-size: 7rem;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+            color: var(--ink-brown);
+            text-shadow: 3px 3px 0px var(--accent-color);
+            position: relative;
+        }
+
+        .tagline {
+            font-family: var(--font-subheading);
+            font-style: italic;
+            font-size: 2rem;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            letter-spacing: 1px;
+        }
+
+        .ornamental-divider {
+            margin: 0 auto 40px auto;
+            width: 80%;
+            height: 24px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 24' fill='%23C8A951'%3E%3Cpath d='M50,12 C40,12 35,2 25,2 C15,2 10,12 0,12 L0,13 C10,13 15,23 25,23 C35,23 40,13 50,13 C60,13 65,23 75,23 C85,23 90,13 100,13 L100,12 C90,12 85,2 75,2 C65,2 60,12 50,12 Z'/%3E%3C/svg%3E");
+            background-repeat: repeat-x;
+            background-position: center;
+        }
+
+        .splash-btns {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 1s forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Vintage CTA */
+        .btn-enter {
+            background: var(--primary-color);
+            color: var(--bg-color);
+            padding: 16px 50px;
+            font-size: 1.2rem;
+            font-family: var(--font-body);
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            position: relative;
+            box-shadow: 4px 4px 0px var(--ink-brown);
+            text-decoration: none;
+            border: 1px solid transparent;
+        }
+
+        .btn-enter:hover {
+            transform: translateY(-2px);
+            background: var(--primary-hover);
+            box-shadow: 5px 5px 0px var(--ink-brown);
+            border-color: var(--accent-color);
+        }
+    </style>
+</head>
+
+<body class="">
+
+    <!-- Global Loader (from style.css) -->
+    <div id="global-loader">
+        <div class="spinner" style="border-top-color: var(--accent-color);"></div>
+    </div>
+
+    <div class="splash-hero">
+        <div class="splash-content vintage-frame">
+            <svg class="film-reel-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
+                <circle cx="12" cy="12" r="3" />
+                <circle cx="7.5" cy="7.5" r="1.5" />
+                <circle cx="16.5" cy="7.5" r="1.5" />
+                <circle cx="7.5" cy="16.5" r="1.5" />
+                <circle cx="16.5" cy="16.5" r="1.5" />
+                <circle cx="12" cy="5.5" r="1.5" />
+                <circle cx="12" cy="18.5" r="1.5" />
+                <circle cx="5.5" cy="12" r="1.5" />
+                <circle cx="18.5" cy="12" r="1.5" />
+            </svg>
+            <div class="splash-logo">Movie Ticket System</div>
+            <div class="tagline">"Where Every Story Begins"</div>
+            <div class="ornamental-divider"></div>
+
+            <div class="splash-btns">
+                <a href="HOME PAGE.html" class="btn-enter transition-link">Enter Cinema</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener("load", () => {
+            setTimeout(() => {
+                const loader = document.getElementById("global-loader");
+                if (loader) { loader.style.opacity = "0"; setTimeout(() => loader.remove(), 600); }
+                document.body.classList.remove("page-transitioning");
+            }, 300);
+        });
+
+        document.addEventListener('click', e => {
+            const link = e.target.closest('.transition-link');
+            if (link && link.href) {
+                e.preventDefault();
+                document.body.classList.add('page-transitioning');
+                setTimeout(() => window.location.href = link.href, 500);
+            }
+        });
+
+
+    </script>
+</body>
+
+</html>

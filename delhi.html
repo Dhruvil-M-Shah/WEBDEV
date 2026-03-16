@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delhi Theatres - Movie Ticket System</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .page-header {
+            padding: 60px 0 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 40px;
+            background: radial-gradient(circle at top right, rgba(229, 9, 20, 0.1), transparent 50%);
+        }
+
+        .theatre-card {
+            padding: 30px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: var(--surface-color);
+            transition: var(--transition-smooth);
+            border-radius: var(--radius-lg);
+        }
+
+        .theatre-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(229, 9, 20, 0.15);
+        }
+    </style>
+</head>
+
+<body class="page-transitioning">
+    <div id="global-loader">
+        <div class="spinner"></div>
+    </div>
+    <div id="navbar-container"></div>
+    <div class="main-content container fade-in-section">
+        <div class="page-header">
+            <h1 class="text-primary">Theatres in Delhi NCR</h1>
+            <p class="text-muted" style="font-size:1.1rem; max-width:600px;">Experience movies in IMAX, 4DX, and premium
+                luxury screens across the city.</p>
+        </div>
+        <div id="grid" class="grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));"></div>
+    </div>
+    <div id="footer-container"></div>
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const grid = document.getElementById("grid");
+            const data = theatresByCity['Delhi'] || [];
+            if (data.length > 0) {
+                grid.innerHTML = data.map(t => `
+                    <div class="theatre-card">
+                        <h3 style="margin-bottom:15px; font-size:1.8rem;">${t}</h3>
+                        <div style="display:flex; gap:10px; margin-bottom:20px;">
+                            <span style="font-size:0.8rem; background:rgba(255,255,255,0.1); padding:4px 8px; border-radius:4px;">IMAX 3D</span>
+                            <span style="font-size:0.8rem; background:rgba(255,255,255,0.1); padding:4px 8px; border-radius:4px;">DOLBY ATMOS</span>
+                        </div>
+                        <a href="HOME PAGE.html" class="btn btn-outline" style="width:100%;">View Shows</a>
+                    </div>
+                `).join('');
+            } else {
+                grid.innerHTML = `<p class="text-muted">No theatres found.</p>`;
+            }
+        });
+    </script>
+</body>
+
+</html>

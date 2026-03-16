@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Tickets - Movie Ticket System</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Vintage Theatre Seating Styles */
+        .seat {
+            background: rgba(245, 237, 214, 0.6) !important;
+            border-color: rgba(74, 92, 47, 0.3) !important;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .seat:hover:not(.booked) {
+            background-color: var(--primary-hover) !important;
+            border-color: var(--primary-color) !important;
+            box-shadow: 2px 2px 0px var(--ink-brown) !important;
+            transform: translateY(-2px);
+        }
+
+        .seat.selected {
+            background-color: var(--primary-color) !important;
+            border-color: var(--bg-color) !important;
+            box-shadow: 3px 3px 0px var(--ink-brown) !important;
+        }
+
+        .seat.booked {
+            background-color: rgba(139, 32, 32, 0.2) !important;
+            border-color: rgba(139, 32, 32, 0.4) !important;
+            opacity: 0.6;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        /* Legend */
+        .legend-box {
+            background: rgba(245, 237, 214, 0.6) !important;
+            border: 1px solid rgba(74, 92, 47, 0.3);
+            backdrop-filter: blur(5px);
+        }
+
+        /* Specific Tier Colors */
+        .seat.premium:not(.selected):not(.booked),
+        .legend-box.premium {
+            background: rgba(200, 169, 81, 0.3) !important;
+            border-color: var(--accent-color) !important;
+        }
+
+        .seat.recliner:not(.selected):not(.booked),
+        .legend-box.recliner {
+            background: rgba(59, 42, 26, 0.2) !important;
+            border-color: var(--ink-brown) !important;
+        }
+
+        /* Booking Summary Card */
+        .booking-summary {
+            background: rgba(245, 237, 214, 0.9);
+            border-radius: var(--radius-sm);
+            padding: 30px;
+            box-shadow: 6px 6px 20px rgba(59, 42, 26, 0.15);
+            border: 2px solid var(--ink-brown);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            position: relative;
+        }
+
+        .booking-summary::before {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            right: 6px;
+            bottom: 6px;
+            border: 1px dashed var(--accent-color);
+            pointer-events: none;
+        }
+
+        /* Perspective Screen Glow */
+        .screen {
+            background: var(--primary-color) !important;
+            box-shadow: 0 -15px 40px rgba(74, 92, 47, 0.4) !important;
+            border-top: 3px double var(--accent-color) !important;
+            border-radius: 2px 2px 0 0;
+            transform: perspective(500px) rotateX(-15deg);
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-heading);
+            color: var(--bg-color);
+            letter-spacing: 12px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        .screen::after {
+            content: 'SCREEN';
+        }
+
+        /* Stadium / Concert Blocks */
+        .seat-block {
+            background: rgba(245, 237, 214, 0.6) !important;
+            border: 2px dashed var(--accent-color) !important;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            color: var(--ink-brown);
+        }
+
+        .seat-block:hover,
+        .seat-block.active {
+            background: var(--primary-color) !important;
+            color: var(--bg-color) !important;
+            box-shadow: 3px 3px 0px var(--ink-brown) !important;
+            border-color: var(--bg-color) !important;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body class="page-transitioning">
+
+    <div id="global-loader">
+        <div class="spinner"></div>
+    </div>
+    <div id="navbar-container"></div>
+
+    <div class="main-content container fade-in-section">
+
+        <div class="flex-between mb-4 mt-4">
+            <div>
+                <h2 id="page-title" class="section-heading-decorate" style="margin-bottom:0;">Select Venue Layout</h2>
+                <p class="text-muted" id="page-subtitle"
+                    style="text-transform:uppercase; letter-spacing:1px; font-size:0.9rem; margin-top:15px;">Choose your
+                    experience</p>
+            </div>
+            <div id="movie-info-header" style="text-align:right;">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+
+        <div class="booking-section">
+
+            <div class="seat-map-container" id="venue-renderer">
+                <!-- Javascript will inject the explicit layout here -->
+            </div>
+
+            <div class="booking-summary">
+                <h3 class="section-heading-decorate"
+                    style="padding-bottom:15px; margin-bottom:20px; color: var(--text-main);">
+                    Your Cart</h3>
+
+                <div class="movie-mini-info" id="movie-info-container"
+                    style="display:flex; gap:15px; margin-bottom:30px;">
+                    <!-- Injected by script -->
+                </div>
+
+                <div class="selection-list" id="cart-items" style="color: var(--text-main);">
+                    <!-- Javascript injected rows: item x qty = price -->
+                </div>
+
+                <div class="price-total flex-between mt-4"
+                    style="border-top: 2px dashed var(--ink-brown); padding-top:20px; align-items:flex-end;">
+                    <span
+                        style="font-size:1rem; text-transform:uppercase; color:var(--text-muted); letter-spacing:1px; padding-bottom:5px;">Total</span>
+                    <span id="total-price"
+                        style="font-size:2.5rem; line-height:1; color: var(--primary-color); font-family: var(--font-display);">₹0</span>
+                </div>
+
+                <button class="btn btn-primary btn-block mt-4" id="proceed-btn" disabled
+                    style="padding: 18px; font-size:1.1rem; letter-spacing:2px; font-family: var(--font-body);">Checkout</button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+    <script>
+        let currentItem = null;
+        let cart = []; // Array of objects { id, name, price }
+        let basePricing = { "Recliner": 500, "Premium": 350, "Classic": 200 };
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const id = getUrlParameter('id');
+            const type = getUrlParameter('type') || 'movie';
+
+            // Find item
+            if (type === 'movie') {
+                currentItem = movies.find(m => m.id === id);
+            } else {
+                ['events', 'sports', 'concerts', 'plays'].forEach(cat => {
+                    const found = categories[cat].find(i => i.id === id);
+                    if (found) currentItem = found;
+                });
+            }
+
+            if (!currentItem) {
+                document.getElementById('page-title').innerText = "Item Not Found";
+                return;
+            }
+
+            // Sync tiers if specified
+            if (currentItem.tiers) basePricing = currentItem.tiers;
+
+            // Render Header Info
+            document.getElementById('movie-info-header').innerHTML = `
+                <h3 style="color:var(--ink-brown); margin-bottom:0; font-family: var(--font-heading);">${currentItem.title}</h3>
+                <span class="text-muted" style="font-size:0.9rem;">${type === 'movie' ? currentItem.language : (currentItem.venueName || currentItem.location)}</span>
+            `;
+
+            document.getElementById('movie-info-container').innerHTML = `
+                <img src="${currentItem.poster}" style="width: 80px; height: 110px; object-fit: cover; border-radius: 4px; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">
+                <div style="display:flex; flex-direction:column; justify-content:center;">
+                    <div style="font-family:var(--font-heading); font-size:1.5rem; line-height:1.2; margin-bottom:5px;">${currentItem.title}</div>
+                    <span class="text-muted" style="font-size:0.85rem; text-transform:uppercase; letter-spacing:1px;">
+                        ${type === 'movie' ? currentItem.genre : currentItem.date}
+                    </span>
+                </div>
+            `;
+
+            renderVenueLayout();
+            updateCartUI();
+        });
+
+        // ------------------------------------
+        // LAYOUT ENGINES
+        // ------------------------------------
+
+        function renderVenueLayout() {
+            const renderer = document.getElementById("venue-renderer");
+            const type = currentItem.venueType || 'multiplex';
+
+            if (type === 'multiplex') {
+                renderer.innerHTML = `
+                    <div class="screen"></div>
+                    <div id="seat-map" style="margin-top:40px;">${generateMultiplexHTML()}</div>
+                    <div class="seat-legend">
+                        <div class="legend-item"><div class="legend-box available"></div> Classic (₹200)</div>
+                        <div class="legend-item"><div class="legend-box premium available"></div> Premium (₹350)</div>
+                        <div class="legend-item"><div class="legend-box recliner available" style="width:40px;"></div> Recliner (₹500)</div>
+                    </div>
+                `;
+                bindMultiplexEvents();
+            } else if (type.includes('stadium')) {
+                renderer.innerHTML = generateStadiumHTML();
+                bindBlockEvents();
+            } else if (type === 'concert') {
+                renderer.innerHTML = generateConcertHTML();
+                bindBlockEvents();
+            }
+        }
+
+        function generateMultiplexHTML() {
+            let html = '';
+
+            // Recliners
+            html += `<div class="tier-label">Recliners - ₹500</div>`;
+            for (let r = 0; r < 2; r++) {
+                html += `<div class="seat-row">`;
+                for (let c = 0; c < 8; c++) {
+                    if (c === 4) html += `<div style="width:20px;"></div>`;
+                    const seatId = `REC-R${r + 1}C${c + 1}`;
+                    const isBooked = Math.random() < 0.2 ? 'booked' : '';
+                    html += `<div class="seat recliner ${isBooked}" data-id="${seatId}" data-tier="Recliner" data-price="500"></div>`;
+                }
+                html += `</div>`;
+            }
+
+            // Premium
+            html += `<div class="tier-label">Premium - ₹350</div>`;
+            for (let r = 0; r < 4; r++) {
+                html += `<div class="seat-row">`;
+                for (let c = 0; c < 12; c++) {
+                    if (c === 6) html += `<div style="width:20px;"></div>`;
+                    const seatId = `PRM-R${r + 1}C${c + 1}`;
+                    const isBooked = Math.random() < 0.3 ? 'booked' : '';
+                    html += `<div class="seat premium ${isBooked}" data-id="${seatId}" data-tier="Premium" data-price="350"></div>`;
+                }
+                html += `</div>`;
+            }
+
+            // Classic
+            html += `<div class="tier-label">Classic - ₹200</div>`;
+            for (let r = 0; r < 4; r++) {
+                html += `<div class="seat-row">`;
+                for (let c = 0; c < 14; c++) {
+                    if (c === 7) html += `<div style="width:20px;"></div>`;
+                    const seatId = `CLS-R${r + 1}C${c + 1}`;
+                    const isBooked = Math.random() < 0.4 ? 'booked' : '';
+                    html += `<div class="seat ${isBooked}" data-id="${seatId}" data-tier="Classic" data-price="200"></div>`;
+                }
+                html += `</div>`;
+            }
+            return html;
+        }
+
+        function bindMultiplexEvents() {
+            document.querySelectorAll('.seat:not(.booked)').forEach(seat => {
+                seat.addEventListener('click', (e) => {
+                    const el = e.target;
+                    const id = el.getAttribute('data-id');
+                    const tier = el.getAttribute('data-tier');
+                    const price = parseInt(el.getAttribute('data-price'));
+
+                    if (el.classList.contains('selected')) {
+                        el.classList.remove('selected');
+                        cart = cart.filter(s => s.id !== id);
+                    } else {
+                        el.classList.add('selected');
+                        cart.push({ id: id, name: `${id} (${tier})`, price: price });
+                    }
+                    updateCartUI();
+                });
+            });
+        }
+
+        function generateStadiumHTML() {
+            const tKeys = Object.keys(basePricing);
+            const getT = (idx) => tKeys[idx] || 'General';
+            const getP = (idx) => basePricing[getT(idx)] || 800;
+
+            return `
+                <p class="text-muted mb-4 style="font-size:0.9rem;">Click a stand area to add tickets to your cart.</p>
+                <div class="stadium-layout">
+                    <div class="stadium-pitch"></div>
+                    <div class="stadium-stand stand-north seat-block" data-name="${getT(0)} North" data-price="${getP(0)}">${getT(0)}<br>₹${getP(0)}</div>
+                    <div class="stadium-stand stand-south seat-block" data-name="${getT(1)} South" data-price="${getP(1)}">${getT(1)}<br>₹${getP(1)}</div>
+                    <div class="stadium-stand stand-east seat-block" data-name="${getT(2)} East Block" data-price="${getP(2)}">${getT(2)}<br>₹${getP(2)}</div>
+                    <div class="stadium-stand stand-west seat-block" data-name="${getT(3) || 'VIP'} Pavilion" data-price="${getP(3) || 5000}">${getT(3) || 'VIP'}<br>₹${getP(3) || 5000}</div>
+                </div>
+            `;
+        }
+
+        function generateConcertHTML() {
+            const tKeys = Object.keys(basePricing);
+            const getT = (idx) => tKeys[idx] || 'General';
+            const getP = (idx) => basePricing[getT(idx)] || 1500;
+
+            return `
+                <p class="text-muted mb-4 style="font-size:0.9rem;">Click a zone to add tickets to your cart.</p>
+                <div class="concert-layout">
+                    <div class="stage">STAGE</div>
+                    <div class="pit-area seat-block" data-name="${getT(0)} Pit" data-price="${getP(0)}">
+                        <div>
+                            <span style="font-weight:bold; font-size:1.2rem; color:var(--primary-color);">${getT(0)} Standing</span><br>
+                            <span style="font-size:0.9rem; color:white;">₹${getP(0)}</span>
+                        </div>
+                    </div>
+                    <div class="seated-zones text-muted">
+                        <div class="seated-zone seat-block" data-name="${getT(1)} Left" data-price="${getP(1)}">${getT(1)} Left <br>₹${getP(1)}</div>
+                        <div class="seated-zone seat-block" data-name="${getT(2)} Center" data-price="${getP(2)}">${getT(2)} VIP <br>₹${getP(2)}</div>
+                        <div class="seated-zone seat-block" data-name="${getT(1)} Right" data-price="${getP(1)}">${getT(1)} Right <br>₹${getP(1)}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function bindBlockEvents() {
+            document.querySelectorAll('.seat-block').forEach(block => {
+                block.addEventListener('click', (e) => {
+                    const el = e.currentTarget;
+                    const name = el.getAttribute('data-name');
+                    const price = parseInt(el.getAttribute('data-price'));
+                    const id = `BLK-${Date.now()}-${Math.floor(Math.random() * 1000)}`; // unique ID per click
+
+                    // Visual feedback
+                    el.classList.add('active');
+                    setTimeout(() => el.classList.remove('active'), 200);
+
+                    cart.push({ id: id, name: name, price: price });
+                    updateCartUI();
+                });
+            });
+        }
+
+        // ------------------------------------
+        // CART LOGIC
+        // ------------------------------------
+
+        function removeCartItem(id) {
+            cart = cart.filter(item => item.id !== id);
+
+            // If multiplex, uncheck seat visual
+            const seat = document.querySelector(`.seat[data-id="${id}"]`);
+            if (seat) seat.classList.remove('selected');
+
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const listEl = document.getElementById('cart-items');
+            const totalEl = document.getElementById('total-price');
+            const btn = document.getElementById('proceed-btn');
+
+            listEl.innerHTML = '';
+            let total = 0;
+
+            if (cart.length === 0) {
+                listEl.innerHTML = '<div class="text-muted" style="text-align:center; padding: 20px 0; font-size:0.8rem;">No tickets selected yet.</div>';
+            } else {
+                cart.forEach(item => {
+                    total += item.price;
+                    listEl.innerHTML += `
+                        <div class="selection-item">
+                            <span>${item.name}</span>
+                            <span>₹${item.price} <button onclick="removeCartItem('${item.id}')" style="background:none; border:none; color:var(--primary-color); cursor:pointer; margin-left:10px;">✕</button></span>
+                        </div>
+                    `;
+                });
+            }
+
+            // Animate number change slightly
+            totalEl.style.transform = 'scale(1.2)';
+            setTimeout(() => totalEl.style.transform = 'scale(1)', 150);
+            totalEl.innerText = `₹${total}`;
+
+            if (cart.length > 0) {
+                btn.removeAttribute('disabled');
+                btn.innerHTML = `Checkout (${cart.length})`;
+                if (!btn.classList.contains('btn-pulse')) btn.classList.add('btn-pulse');
+            } else {
+                btn.setAttribute('disabled', 'true');
+                btn.innerHTML = `Checkout`;
+                btn.classList.remove('btn-pulse');
+            }
+        }
+
+        document.getElementById('proceed-btn').addEventListener('click', () => {
+            const user = localStorage.getItem('currentUser');
+            if (!user) {
+                alert("Please log in to proceed to payment.");
+                window.location.href = "login.html";
+                return;
+            }
+
+            const total = cart.reduce((sum, i) => sum + i.price, 0);
+            const bookingData = {
+                item: currentItem,
+                seats: cart.map(i => i.name),
+                total: total,
+                date: new Date().toLocaleDateString()
+            };
+            localStorage.setItem("currentBooking", JSON.stringify(bookingData));
+
+            document.body.classList.add('page-transitioning');
+            setTimeout(() => window.location.href = "payment.html", 400);
+        });
+    </script>
+</body>
+
+</html>
