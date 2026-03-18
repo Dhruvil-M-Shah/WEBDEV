@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Movie Ticket System</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .profile-container {
+            max-width: 800px;
+            margin: 60px auto;
+            background: #ffffff;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            background-color: var(--primary-color);
+            color: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .profile-info h1 {
+            font-size: 2rem;
+            color: var(--text-main);
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .profile-info p {
+            color: #666666;
+            font-size: 1.1rem;
+        }
+
+        .bookings-title {
+            font-size: 1.5rem;
+            color: var(--text-main);
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+
+        .booking-card {
+            background: #fbfbfb;
+            border: 1px dashed var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 25px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition-fast);
+        }
+
+        .booking-card:hover {
+            border-color: var(--primary-color);
+            background: #ffffff;
+            box-shadow: 0 5px 15px rgba(108, 53, 222, 0.08);
+        }
+
+        .booking-details h3 {
+            font-size: 1.25rem;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .booking-meta {
+            color: #666666;
+            font-size: 0.95rem;
+            margin-bottom: 5px;
+        }
+
+        .booking-price {
+            margin-top: 10px;
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+        .booking-status {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-confirmed {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-cancelled {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        @media (max-width: 768px) {
+            .booking-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+
+            .booking-status {
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body class="page-transitioning">
+    <div id="global-loader">
+        <div class="spinner"></div>
+    </div>
+
+    <div id="navbar-container"></div>
+
+    <div class="container main-content fade-in-section">
+        <div class="profile-container">
+            <div class="profile-header">
+                <div class="profile-avatar" id="profile-avatar">U</div>
+                <div class="profile-info">
+                    <h1 id="profile-name">User Name</h1>
+                    <p id="profile-email">user@example.com</p>
+                </div>
+            </div>
+
+            <div class="bookings-section">
+                <h2 class="bookings-title">My Bookings</h2>
+                <div id="bookings-list">
+                    <div class="spinner" style="margin: 30px auto;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const userStr = localStorage.getItem("currentUser");
+            const token = localStorage.getItem("token");
+
+            // Auth Guard Redirects
+            if (!userStr || !token) {
+                window.location.href = "login.html";
+                return;
+            }
+
+            const user = JSON.parse(userStr);
+            document.getElementById("profile-name").innerText = user.name;
+            document.getElementById("profile-email").innerText = user.email;
+            document.getElementById("profile-avatar").innerText = user.name.charAt(0);
+
+            const bookingsList = document.getElementById("bookings-list");
+
+            try {
+                const res = await fetch("http://localhost:5000/api/bookings/my", {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!res.ok) {
+                    if (res.status === 401) {
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('currentUser');
+                        window.location.href = "login.html";
+                        return;
+                    }
+                    throw new Error("Failed to fetch bookings");
+                }
+
+                const data = await res.json();
+
+                if (!data || data.length === 0) {
+                    bookingsList.innerHTML = `<p class="text-muted" style="text-align:center; padding: 30px 0;">No bookings yet.</p>`;
+                    return;
+                }
+
+                let bookingsHtml = '';
+                data.forEach(b => {
+                    const statusClass = b.status.toLowerCase() === 'confirmed' ? 'status-confirmed' : 'status-cancelled';
+
+                    bookingsHtml += `
+                        <div class="booking-card">
+                            <div class="booking-details">
+                                <h3>${b.title || 'Unknown Movie'}</h3>
+                                <p class="booking-meta">Date: ${new Date(b.booked_at).toLocaleDateString()}</p>
+                                <p class="booking-meta">Seats: <span style="font-weight:600; color:var(--text-main);">${b.seats}</span></p>
+                                <p class="booking-price">₹${b.total_price}</p>
+                            </div>
+                            <div class="booking-status">
+                                <span class="status-badge ${statusClass}">${b.status}</span>
+                                <span class="text-muted" style="font-size:0.8rem;">ID: #${b.booking_id}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                bookingsList.innerHTML = bookingsHtml;
+
+            } catch (err) {
+                console.error(err);
+                bookingsList.innerHTML = `<p class="text-danger" style="text-align:center;">Failed to load bookings. Ensure backend is running.</p>`;
+            }
+        });
+    </script>
+</body>
+
+</html>

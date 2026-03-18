@@ -19,6 +19,7 @@ window.addEventListener("load", () => {
 
 function initApp() {
     renderNavbar();
+    setupGlobalSearch();
     renderFooter();
     renderTrailerModal();
 
@@ -75,8 +76,9 @@ function renderNavbar() {
     if (userStr) {
         const user = JSON.parse(userStr);
         userHtml = `
-            <div class="user-menu">
+            <div class="user-menu" style="display:flex; align-items:center; gap:20px;">
                 <span class="user-name">Hi, ${user.name.split(' ')[0]}</span>
+                <a href="profile.html" class="transition-link" style="color: var(--primary-color); font-weight: 600; text-decoration: none;">My Profile</a>
                 <span class="logout-target" onclick="logout()">Logout</span>
             </div>
         `;
@@ -101,6 +103,9 @@ function renderNavbar() {
                         <a href="movies.html" class="transition-link">Movies</a>
                     </div>
                 </div>
+                <div class="nav-center">
+                    <input type="text" id="global-search" placeholder="Search movies...">
+                </div>
                 <div class="nav-right">
                     <select class="city-selector" onchange="changeCity(this.value)">
                         ${cityOptions}
@@ -120,6 +125,35 @@ function renderNavbar() {
             (currentPage === 'HOME PAGE.html' && link.getAttribute('href') === 'movies.html')) {
             link.classList.add('active');
         }
+    });
+}
+
+function setupGlobalSearch() {
+    const searchInput = document.getElementById('global-search');
+    if (!searchInput) return;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const query = urlParams.get('search');
+    const isMoviesPage = window.location.pathname.includes('movies.html');
+
+    if (isMoviesPage && query) {
+        searchInput.value = query;
+    }
+
+    let globalSearchTimeout = null;
+    searchInput.addEventListener('input', (e) => {
+        clearTimeout(globalSearchTimeout);
+        const term = e.target.value.trim();
+
+        globalSearchTimeout = setTimeout(() => {
+            if (isMoviesPage) {
+                document.dispatchEvent(new CustomEvent('navSearch', { detail: { query: term } }));
+            } else {
+                if (term) {
+                    window.location.href = `movies.html?search=${encodeURIComponent(term)}`;
+                }
+            }
+        }, 400);
     });
 }
 
