@@ -99,10 +99,6 @@ function renderNavbar() {
                     <a href="HOME PAGE.html" class="logo transition-link">Movie Ticket System</a>
                     <div class="nav-links" style="margin-left:20px;">
                         <a href="movies.html" class="transition-link">Movies</a>
-                        <a href="sports.html" class="transition-link">Sports</a>
-                        <a href="concerts.html" class="transition-link">Concerts</a>
-                        <a href="events.html" class="transition-link">Events</a>
-                        <a href="plays.html" class="transition-link">Plays</a>
                     </div>
                 </div>
                 <div class="nav-right">
@@ -137,15 +133,12 @@ function renderFooter() {
                 <div class="flex-between" style="align-items:flex-start; flex-wrap:wrap; gap:30px;">
                     <div class="footer-col" style="max-width:300px;">
                         <div class="logo" style="font-size: 2rem; margin-bottom: 15px;">Movie Ticket System</div>
-                        <p class="text-muted" style="font-family: var(--font-body); font-size:0.9rem;">Your premium destination for cinematic experiences, thrilling sports, and live entertainment.</p>
+                        <p class="text-muted" style="font-family: var(--font-body); font-size:0.9rem;">Your premium destination for cinematic experiences.</p>
                     </div>
                     <div class="footer-col">
                         <h3>Categories</h3>
                         <ul class="footer-links">
                             <li><a href="movies.html" class="transition-link">Movies</a></li>
-                            <li><a href="sports.html" class="transition-link">Sports</a></li>
-                            <li><a href="concerts.html" class="transition-link">Concerts</a></li>
-                            <li><a href="events.html" class="transition-link">Events</a></li>
                         </ul>
                     </div>
                     <div class="footer-col">

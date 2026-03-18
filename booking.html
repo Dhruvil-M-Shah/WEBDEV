@@ -195,11 +195,6 @@
             // Find item
             if (type === 'movie') {
                 currentItem = movies.find(m => m.id === id);
-            } else {
-                ['events', 'sports', 'concerts', 'plays'].forEach(cat => {
-                    const found = categories[cat].find(i => i.id === id);
-                    if (found) currentItem = found;
-                });
             }
 
             if (!currentItem) {
