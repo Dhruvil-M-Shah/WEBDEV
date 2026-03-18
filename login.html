@@ -83,24 +83,35 @@
     <script src="data.js"></script>
     <script src="script.js"></script>
     <script>
-        document.getElementById('login-form').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const errorMsg = document.getElementById('error-msg');
+    document.getElementById('login-form').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const errorMsg = document.getElementById('error-msg');
 
-            let users = JSON.parse(localStorage.getItem('Movie Ticket System_users')) || [];
-            const user = users.find(u => u.email === email && u.password === password);
+        try {
+            const res = await fetch('http://localhost:5000/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
 
-            if (user) {
-                localStorage.setItem('currentUser', JSON.stringify({ name: user.name, email: user.email }));
+            const data = await res.json();
+
+            if (res.ok) {
+                localStorage.setItem('currentUser', JSON.stringify(data.user));
+                localStorage.setItem('token', data.token);
                 window.location.href = "HOME PAGE.html";
             } else {
-                errorMsg.innerText = "Invalid email or password.";
+                errorMsg.innerText = data.message || "Invalid email or password.";
                 errorMsg.style.display = "block";
             }
-        });
-    </script>
+        } catch (error) {
+            errorMsg.innerText = "Cannot connect to server. Make sure backend is running.";
+            errorMsg.style.display = "block";
+        }
+    });
+</script>
 </body>
 
 </html>

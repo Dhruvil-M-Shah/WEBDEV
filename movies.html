@@ -33,18 +33,41 @@
     <script src="data.js"></script>
     <script src="script.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const city = localStorage.getItem("selectedCity") || "Delhi";
-            document.getElementById("current-city-label").innerText = city;
-            const cityMovies = movies.filter(m => m.city.includes(city));
-            const grid = document.getElementById("all-movies-grid");
-            if (cityMovies.length > 0) {
-                grid.innerHTML = cityMovies.map(m => generateCardHTML(m, 'movie')).join('');
+    document.addEventListener("DOMContentLoaded", async () => {
+        const city = localStorage.getItem("selectedCity") || "Delhi";
+        document.getElementById("current-city-label").innerText = city;
+        const grid = document.getElementById("all-movies-grid");
+
+        try {
+            const res = await fetch("http://localhost:5000/api/movies");
+            const data = await res.json();
+
+            const mapped = data.map(m => ({
+                id: m.movie_id,
+                title: m.title,
+                genre: m.genre,
+                language: m.language,
+                rating: m.rating,
+                poster: m.poster_url,
+                synopsis: m.synopsis,
+                trailer: m.trailer,
+                heroImage: m.hero_image,
+                censor: m.censor,
+                cast: JSON.parse(m.cast_data || '[]'),
+                isFeatured: m.is_featured
+            }));
+
+            if (mapped.length > 0) {
+                grid.innerHTML = mapped.map(m => generateCardHTML(m, 'movie')).join('');
             } else {
-                grid.innerHTML = `<p class="text-muted">No movies available in ${city}.</p>`;
+                grid.innerHTML = `<p class="text-muted">No movies available.</p>`;
             }
-        });
-    </script>
+        } catch (error) {
+            console.log(error);
+            grid.innerHTML = `<p class="text-muted">Could not load movies. Make sure backend is running.</p>`;
+        }
+    });
+</script>
 </body>
 
 </html>

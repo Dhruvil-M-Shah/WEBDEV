@@ -91,35 +91,49 @@
     <script src="data.js"></script>
     <script src="script.js"></script>
     <script>
-        document.getElementById('signup-form').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const confirm = document.getElementById('confirm-password').value;
-            const errorMsg = document.getElementById('error-msg');
+    document.getElementById('signup-form').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const confirm = document.getElementById('confirm-password').value;
+        const errorMsg = document.getElementById('error-msg');
 
-            if (password !== confirm) {
-                errorMsg.innerText = "Passwords do not match.";
+        if (password !== confirm) {
+            errorMsg.innerText = "Passwords do not match.";
+            errorMsg.style.display = "block";
+            return;
+        }
+
+        try {
+            const res = await fetch('http://localhost:5000/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, password, phone: '' })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                const loginRes = await fetch('http://localhost:5000/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const loginData = await loginRes.json();
+                localStorage.setItem('currentUser', JSON.stringify(loginData.user));
+                localStorage.setItem('token', loginData.token);
+                window.location.href = "HOME PAGE.html";
+            } else {
+                errorMsg.innerText = data.message || "Signup failed. Try again.";
                 errorMsg.style.display = "block";
-                return;
             }
-
-            let users = JSON.parse(localStorage.getItem('Movie Ticket System_users')) || [];
-
-            if (users.find(u => u.email === email)) {
-                errorMsg.innerText = "Email already registered.";
-                errorMsg.style.display = "block";
-                return;
-            }
-
-            users.push({ name, email, password });
-            localStorage.setItem('Movie Ticket System_users', JSON.stringify(users));
-            localStorage.setItem('currentUser', JSON.stringify({ name, email }));
-
-            window.location.href = "HOME PAGE.html";
-        });
-    </script>
+        } catch (error) {
+            errorMsg.innerText = "Cannot connect to server. Make sure backend is running.";
+            errorMsg.style.display = "block";
+        }
+    });
+</script>
 </body>
 
 </html>

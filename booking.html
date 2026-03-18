@@ -171,14 +171,30 @@
         let cart = []; // Array of objects { id, name, price }
         let basePricing = { "Recliner": 500, "Premium": 350, "Classic": 200 };
 
-        document.addEventListener("DOMContentLoaded", () => {
+        document.addEventListener("DOMContentLoaded", async () => {
             const id = getUrlParameter('id');
             const type = getUrlParameter('type') || 'movie';
 
             // Find item
             if (type === 'movie') {
-                currentItem = movies.find(m => m.id === id);
-            }
+            const res = await fetch(`http://localhost:5000/api/movies`);
+            const data = await res.json();
+            const found = data.find(m => m.movie_id == id);
+            if (found) {
+                currentItem = {
+                    id: found.movie_id,
+                    title: found.title,
+                    genre: found.genre,
+                    language: found.language,
+                    rating: found.rating,
+                    poster: found.poster_url,
+                    synopsis: found.synopsis,
+                    trailer: found.trailer,
+                    cast: JSON.parse(found.cast_data || '[]'),
+                    venueType: 'multiplex'
+                };
+         }
+}
 
             if (!currentItem) {
                 document.getElementById('page-title').innerText = "Item Not Found";
@@ -411,26 +427,54 @@
             }
         }
 
-        document.getElementById('proceed-btn').addEventListener('click', () => {
-            const user = localStorage.getItem('currentUser');
-            if (!user) {
-                alert("Please log in to proceed to payment.");
-                window.location.href = "login.html";
-                return;
-            }
+        document.getElementById('proceed-btn').addEventListener('click', async () => {
+    const user = localStorage.getItem('currentUser');
+    const token = localStorage.getItem('token');
 
-            const total = cart.reduce((sum, i) => sum + i.price, 0);
+    if (!user || !token) {
+        alert("Please log in to proceed to payment.");
+        window.location.href = "login.html";
+        return;
+    }
+
+    const total = cart.reduce((sum, i) => sum + i.price, 0);
+    const seats = cart.map(i => i.name).join(', ');
+
+    try {
+        const res = await fetch('http://localhost:5000/api/bookings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                movie_id: currentItem.id,
+                seats: seats,
+                total_price: total
+            })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
             const bookingData = {
                 item: currentItem,
                 seats: cart.map(i => i.name),
                 total: total,
-                date: new Date().toLocaleDateString()
+                date: new Date().toLocaleDateString(),
+                booking_id: data.booking_id
             };
             localStorage.setItem("currentBooking", JSON.stringify(bookingData));
-
             document.body.classList.add('page-transitioning');
             setTimeout(() => window.location.href = "payment.html", 400);
-        });
+        } else {
+            alert(data.message || "Booking failed. Try again.");
+        }
+    } catch (error) {
+        console.log(error);
+        alert("Cannot connect to server. Make sure backend is running.");
+    }
+});
     </script>
 </body>
 

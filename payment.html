@@ -318,15 +318,52 @@
             }
         }
 
-        function processPayment() {
-            const btn = document.querySelector("#payment-view .btn-primary");
-            btn.innerText = "Processing...";
-            btn.disabled = true;
+        async function processPayment() {
+    const btn = document.querySelector("#payment-view .btn-primary");
+    btn.innerText = "Processing...";
+    btn.disabled = true;
 
-            setTimeout(() => {
-                showConfirmation();
-            }, 1200);
+    const token = localStorage.getItem('token');
+    if (!token) {
+        alert("Please log in first.");
+        window.location.href = "login.html";
+        return;
+    }
+
+    const activeMethod = document.querySelector('.pay-method.active').innerText.includes('UPI') ? 'upi' : 'card';
+
+    try {
+        const res = await fetch('http://localhost:5000/api/payments', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                booking_id: bookingData.booking_id,
+                amount: bookingData.total,
+                method: activeMethod
+            })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            bookingData.payment_id = data.payment_id;
+            localStorage.setItem('currentBooking', JSON.stringify(bookingData));
+            showConfirmation();
+        } else {
+            btn.innerText = "PAY SECURELY";
+            btn.disabled = false;
+            alert(data.message || "Payment failed. Try again.");
         }
+    } catch (error) {
+        console.log(error);
+        btn.innerText = "PAY SECURELY";
+        btn.disabled = false;
+        alert("Cannot connect to server. Make sure backend is running.");
+    }
+}
 
         function showConfirmation() {
             document.getElementById("payment-view").classList.add("hidden");
@@ -338,7 +375,7 @@
             setTimeout(() => confView.classList.add("is-visible"), 50);
 
             // Populate Ticket
-            document.getElementById("ticket-id").innerText = `BK-ID: TXN${Math.floor(Math.random() * 9000000) + 1000000}`;
+            document.getElementById("ticket-id").innerText = `BK-ID: #${bookingData.booking_id || Math.floor(Math.random() * 9000000)}`;
             document.getElementById("ticket-title").innerText = bookingData.item.title;
 
             let meta = bookingData.item.genre ? bookingData.item.genre : bookingData.item.location;

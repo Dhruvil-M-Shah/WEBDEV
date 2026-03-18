@@ -6,6 +6,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.use('/api/movies', require('./routes/movies'));
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/bookings', require('./routes/bookings'));
+app.use('/api/payments', require('./routes/payments'));
+
+
 app.get('/', (req, res) => {
   res.send('Movie Booking Backend is running!');
 });
