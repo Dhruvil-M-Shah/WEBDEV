@@ -83,8 +83,8 @@ function renderNavbar() {
     } else {
         userHtml = `
             <div class="nav-links">
-                <a href="login.html" class="btn btn-outline" style="padding: 8px 18px; border-radius: 4px;">Login</a>
-                <a href="signup.html" class="btn btn-primary" style="padding: 8px 18px; border-radius: 4px;">Signup</a>
+                <a href="login.html" class="btn btn-outline" style="padding: 8px 18px;">Login</a>
+                <a href="signup.html" class="btn btn-primary" style="padding: 8px 18px;">Signup</a>
             </div>
         `;
     }
@@ -241,7 +241,7 @@ function generateCardHTML(item, type = 'movie') {
             ${castHtml}
             <div class="card-hover-synopsis">${item.synopsis || "An epic cinematic journey awaits..."}</div>
             <div class="card-hover-actions">
-                ${item.trailer ? `<button class="btn btn-outline" style="width:100%; padding:10px;" onclick="openTrailer(event, '${item.trailer}')">▶ Trailer</button>` : ''}
+                ${item.trailer ? `<button class="btn btn-outline" style="width:100%; padding:10px;" onclick="openTrailer(event, '${item.trailer}')">Watch Trailer</button>` : ''}
                 <button class="btn btn-primary" style="width:100%; padding:10px;" onclick="event.stopPropagation(); window.location.href='${bookLink}'">Book Tickets</button>
             </div>
         `;
@@ -269,7 +269,7 @@ function generateCardHTML(item, type = 'movie') {
             <div class="card-body">
                 <div class="card-title">${item.title}</div>
                 <div class="card-meta">
-                    <span style="border: 1px solid var(--border-color); padding: 2px 8px; border-radius: 12px; color: var(--text-main); font-weight:700; font-size:0.75rem; text-transform:uppercase;">${subtitle}</span>
+                    <span style="border: 1px solid var(--border-color); padding: 4px 10px; border-radius: 50px; color: var(--text-muted); font-weight:500; font-size:0.75rem;">${subtitle}</span>
                     ${extra}
                 </div>
             </div>

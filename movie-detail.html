@@ -36,8 +36,8 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(to right, var(--bg-color) 10%, rgba(74, 92, 47, 0.9) 50%, rgba(59, 42, 26, 0.6) 100%),
-                linear-gradient(to top, var(--bg-color) 0%, transparent 20%);
+            background: rgba(255, 255, 255, 0.85);
+            /* Clean white overlay */
             z-index: 2;
         }
 
@@ -51,17 +51,13 @@
 
         .detail-poster {
             flex: 0 0 320px;
-            border-radius: var(--radius-sm);
-            background: rgba(245, 237, 214, 0.8);
-            padding: 8px;
-            border: 2px dashed var(--accent-color);
-            box-shadow: 4px 4px 0px rgba(59, 42, 26, 0.2);
             animation: fadeUp 0.8s ease-out;
         }
 
         .detail-poster img {
             width: 100%;
-            height: 100%;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             object-fit: cover;
             display: block;
         }
@@ -79,19 +75,18 @@
         }
 
         .meta-tag {
-            background: rgba(245, 237, 214, 0.8);
+            background: #ffffff;
             padding: 5px 12px;
-            border-radius: var(--radius-sm);
+            border-radius: 50px;
             font-size: 0.9rem;
-            backdrop-filter: blur(10px);
-            border: 1px dashed var(--accent-color);
-            color: var(--ink-brown);
-            box-shadow: 2px 2px 0px rgba(59, 42, 26, 0.1);
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            font-weight: 500;
         }
 
         .synopsis {
             font-size: 1.1rem;
-            color: #ccc;
+            color: var(--text-muted);
             margin-bottom: 30px;
             max-width: 800px;
             line-height: 1.8;
@@ -100,8 +95,8 @@
         .cast-section h3 {
             font-size: 1.5rem;
             margin-bottom: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             padding-bottom: 10px;
+            color: var(--text-main);
         }
 
         .cast-grid {
@@ -129,20 +124,20 @@
             border-radius: 50%;
             object-fit: cover;
             margin-bottom: 10px;
-            border: 2px dashed var(--primary-color);
-            box-shadow: 2px 2px 0px rgba(59, 42, 26, 0.2);
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 4px 10px rgba(108, 53, 222, 0.15);
             transition: transform 0.3s;
         }
 
         .cast-member:hover img {
             transform: scale(1.1);
-            border-color: var(--accent-color);
-            box-shadow: 3px 3px 0px rgba(59, 42, 26, 0.3);
+            box-shadow: 0 6px 15px rgba(108, 53, 222, 0.25);
         }
 
         .cast-name {
             font-weight: 600;
             font-size: 0.9rem;
+            color: var(--text-main);
         }
 
         .cast-role {
@@ -179,10 +174,6 @@
                 justify-content: center;
             }
 
-            .detail-hero::after {
-                background: linear-gradient(to top, var(--bg-color) 0%, rgba(28, 10, 0, 0.8) 100%);
-            }
-
             .synopsis {
                 text-align: left;
             }
@@ -206,15 +197,16 @@
             </div>
 
             <div class="detail-info">
-                <h1 id="detail-title" class="section-heading-decorate"
-                    style="font-size: 4rem; margin-bottom:25px; padding-bottom:5px; color: var(--text-main);">Movie
+                <h1 id="detail-title"
+                    style="font-size: 4rem; margin-bottom:25px; padding-bottom:5px; color: var(--text-main); font-weight: 700;">
+                    Movie
                     Title</h1>
 
                 <div class="meta-tags" id="detail-meta">
                     <span class="meta-tag"
-                        style="background: var(--accent-color); color: var(--ink-brown); font-weight: bold; border:none; box-shadow: 2px 2px 0px rgba(59, 42, 26, 0.2);">IMDb
+                        style="background: var(--primary-color); color: #ffffff; font-weight: bold; border:none;">IMDb
                         <span id="rating">9.0</span></span>
-                    <span class="meta-tag" id="censor" style="border:1px dashed var(--primary-color);">U/A</span>
+                    <span class="meta-tag" id="censor">U/A</span>
                     <span class="meta-tag" id="duration">2h 30m</span>
                     <span class="meta-tag" id="genre">Action, Drama</span>
                     <span class="meta-tag" id="release">15 Aug 2024</span>
@@ -225,7 +217,7 @@
                 </div>
 
                 <div class="cast-section">
-                    <h3 class="section-heading-decorate" style="margin-bottom: 25px;">Top Cast</h3>
+                    <h3 style="margin-bottom: 25px; font-weight: 600;">Top Cast</h3>
                     <div class="cast-grid" id="cast-container">
                         <!-- JS injected -->
                     </div>

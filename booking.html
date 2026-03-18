@@ -9,9 +9,8 @@
     <style>
         /* Vintage Theatre Seating Styles */
         .seat {
-            background: rgba(245, 237, 214, 0.6) !important;
-            border-color: rgba(74, 92, 47, 0.3) !important;
-            backdrop-filter: blur(5px);
+            background: #f3eeff !important;
+            border-color: #eeeeee !important;
             transition: all 0.3s ease;
             position: relative;
         }
@@ -19,14 +18,13 @@
         .seat:hover:not(.booked) {
             background-color: var(--primary-hover) !important;
             border-color: var(--primary-color) !important;
-            box-shadow: 2px 2px 0px var(--ink-brown) !important;
             transform: translateY(-2px);
         }
 
         .seat.selected {
             background-color: var(--primary-color) !important;
-            border-color: var(--bg-color) !important;
-            box-shadow: 3px 3px 0px var(--ink-brown) !important;
+            border-color: var(--primary-color) !important;
+            color: #ffffff;
         }
 
         .seat.booked {
@@ -39,46 +37,34 @@
 
         /* Legend */
         .legend-box {
-            background: rgba(245, 237, 214, 0.6) !important;
-            border: 1px solid rgba(74, 92, 47, 0.3);
-            backdrop-filter: blur(5px);
+            background: #f3eeff !important;
+            border: 1px solid #eeeeee;
         }
 
         /* Specific Tier Colors */
         .seat.premium:not(.selected):not(.booked),
         .legend-box.premium {
-            background: rgba(200, 169, 81, 0.3) !important;
-            border-color: var(--accent-color) !important;
+            background: #e6dcff !important;
+            border-color: var(--primary-color) !important;
         }
 
         .seat.recliner:not(.selected):not(.booked),
         .legend-box.recliner {
-            background: rgba(59, 42, 26, 0.2) !important;
-            border-color: var(--ink-brown) !important;
+            background: #d4c4f9 !important;
+            border-color: var(--primary-color) !important;
         }
 
         /* Booking Summary Card */
         .booking-summary {
-            background: rgba(245, 237, 214, 0.9);
-            border-radius: var(--radius-sm);
+            background: #ffffff;
+            border-radius: var(--radius-lg);
             padding: 30px;
-            box-shadow: 6px 6px 20px rgba(59, 42, 26, 0.15);
-            border: 2px solid var(--ink-brown);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
             position: relative;
         }
 
-        .booking-summary::before {
-            content: '';
-            position: absolute;
-            top: 6px;
-            left: 6px;
-            right: 6px;
-            bottom: 6px;
-            border: 1px dashed var(--accent-color);
-            pointer-events: none;
-        }
+
 
         /* Perspective Screen Glow */
         .screen {
@@ -133,9 +119,8 @@
 
         <div class="flex-between mb-4 mt-4">
             <div>
-                <h2 id="page-title" class="section-heading-decorate" style="margin-bottom:0;">Select Venue Layout</h2>
-                <p class="text-muted" id="page-subtitle"
-                    style="text-transform:uppercase; letter-spacing:1px; font-size:0.9rem; margin-top:15px;">Choose your
+                <h2 id="page-title" style="margin-bottom:0;">Select Venue Layout</h2>
+                <p class="text-muted" id="page-subtitle" style="font-size:0.95rem; margin-top:5px;">Choose your
                     experience</p>
             </div>
             <div id="movie-info-header" style="text-align:right;">
@@ -150,8 +135,7 @@
             </div>
 
             <div class="booking-summary">
-                <h3 class="section-heading-decorate"
-                    style="padding-bottom:15px; margin-bottom:20px; color: var(--text-main);">
+                <h3 style="padding-bottom:15px; margin-bottom:20px; color: var(--text-main);">
                     Your Cart</h3>
 
                 <div class="movie-mini-info" id="movie-info-container"
@@ -164,15 +148,14 @@
                 </div>
 
                 <div class="price-total flex-between mt-4"
-                    style="border-top: 2px dashed var(--ink-brown); padding-top:20px; align-items:flex-end;">
-                    <span
-                        style="font-size:1rem; text-transform:uppercase; color:var(--text-muted); letter-spacing:1px; padding-bottom:5px;">Total</span>
+                    style="border-top: 1px solid var(--border-color); padding-top:20px; align-items:flex-end;">
+                    <span style="font-size:1rem; color:var(--text-muted); padding-bottom:5px;">Total</span>
                     <span id="total-price"
                         style="font-size:2.5rem; line-height:1; color: var(--primary-color); font-family: var(--font-display);">₹0</span>
                 </div>
 
                 <button class="btn btn-primary btn-block mt-4" id="proceed-btn" disabled
-                    style="padding: 18px; font-size:1.1rem; letter-spacing:2px; font-family: var(--font-body);">Checkout</button>
+                    style="padding: 18px; font-size:1.1rem; letter-spacing:0.5px; font-family: var(--font-body);">Checkout</button>
             </div>
 
         </div>
