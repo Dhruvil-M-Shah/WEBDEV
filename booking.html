@@ -28,9 +28,9 @@
         }
 
         .seat.booked {
-            background-color: rgba(139, 32, 32, 0.2) !important;
-            border-color: rgba(139, 32, 32, 0.4) !important;
-            opacity: 0.6;
+            background-color: #e74c3c !important;
+            border-color: #c0392b !important;
+            opacity: 0.8;
             cursor: not-allowed;
             pointer-events: none;
         }
@@ -143,8 +143,12 @@
                     <!-- Injected by script -->
                 </div>
 
-                <div class="selection-list" id="cart-items" style="color: var(--text-main);">
+                <div class="selection-list" id="cart-items" style="color: var(--text-main); max-height: 220px; overflow-y: auto; padding-right: 5px;">
                     <!-- Javascript injected rows: item x qty = price -->
+                </div>
+
+                <div id="cart-breakdown">
+                    <!-- Javascript injected breakdown -->
                 </div>
 
                 <div class="price-total flex-between mt-4"
@@ -171,59 +175,135 @@
         let cart = []; // Array of objects { id, name, price }
         let basePricing = { "Recliner": 500, "Premium": 350, "Classic": 200 };
 
+        // Global variables for booking location state
+        let currentCity, currentTheatre, currentShowDate, currentShowTime, currentDisplayDate;
+
         document.addEventListener("DOMContentLoaded", async () => {
             const id = getUrlParameter('id');
             const type = getUrlParameter('type') || 'movie';
 
+            // New Location tracking safely decoded
+            currentCity = (getUrlParameter('city').replace(/\+/g, ' ')) || localStorage.getItem('selectedCity') || 'Delhi';
+            currentTheatre = (getUrlParameter('theatre').replace(/\+/g, ' ').replace(/%3A/g, ':').replace(/%2C/g, ',')) || 'Generic Cinema';
+            currentShowDate = (getUrlParameter('date').replace(/\+/g, ' ')) || new Date().toISOString().split('T')[0];
+            currentShowTime = (getUrlParameter('time').replace(/\+/g, ' ').replace(/%3A/g, ':')) || '10:00 AM';
+
             // Find item
             if (type === 'movie') {
-            const res = await fetch(`http://localhost:5000/api/movies`);
-            const data = await res.json();
-            const found = data.find(m => m.movie_id == id);
-            if (found) {
-                currentItem = {
-                    id: found.movie_id,
-                    title: found.title,
-                    genre: found.genre,
-                    language: found.language,
-                    rating: found.rating,
-                    poster: found.poster_url,
-                    synopsis: found.synopsis,
-                    trailer: found.trailer,
-                    cast: JSON.parse(found.cast_data || '[]'),
-                    venueType: 'multiplex'
-                };
-         }
-}
+                try {
+                    const res = await fetch(`http://localhost:5000/api/movies`);
+                    const data = await res.json();
+
+                    let found = data.find(m => m.movie_id == id);
+
+                    if (!found && typeof movies !== 'undefined') {
+                        const localMovie = movies.find(m => m.id === id);
+                        if (localMovie) found = data.find(m => m.title === localMovie.title);
+                    }
+
+                    if (found) {
+                        currentItem = {
+                            id: found.movie_id,
+                            title: found.title,
+                            genre: found.genre,
+                            language: found.language,
+                            rating: found.rating,
+                            poster: found.poster_url,
+                            synopsis: found.synopsis,
+                            trailer: found.trailer,
+                            cast: JSON.parse(found.cast_data || '[]'),
+                            venueType: 'multiplex'
+                        };
+                    }
+                } catch (e) {
+                    console.warn("Backend not running, using local data.js fallback");
+                }
+                
+                // Local data fallback if backend failed or item not found in DB
+                if (!currentItem && typeof movies !== 'undefined') {
+                    const localFallback = movies.find(m => String(m.id) === String(id));
+                    if (localFallback) {
+                        currentItem = {
+                            id: localFallback.id,
+                            title: localFallback.title,
+                            genre: localFallback.genre,
+                            poster: localFallback.poster || localFallback.image,
+                            venueType: 'multiplex'
+                        };
+                    }
+                }
+            }
 
             if (!currentItem) {
                 document.getElementById('page-title').innerText = "Item Not Found";
+                document.querySelector('.booking-summary').style.display = 'none';
                 return;
             }
 
             // Sync tiers if specified
             if (currentItem.tiers) basePricing = currentItem.tiers;
 
+            const thParts = currentTheatre.split(':');
+            const thBrand = thParts[0].trim();
+            const thSub = thParts[1] ? thParts.slice(1).join(':').trim() : currentCity;
+
             // Render Header Info
             document.getElementById('movie-info-header').innerHTML = `
-                <h3 style="color:var(--ink-brown); margin-bottom:0; font-family: var(--font-heading);">${currentItem.title}</h3>
-                <span class="text-muted" style="font-size:0.9rem;">${type === 'movie' ? currentItem.language : (currentItem.venueName || currentItem.location)}</span>
+                <h3 style="color:var(--text-main); margin-bottom:0; font-family: var(--font-heading);">${currentItem.title}</h3>
+                <span class="text-muted" style="font-size:0.9rem;">${thBrand} • ${thSub} • ${currentCity}</span>
             `;
 
+            currentDisplayDate = new Date(currentShowDate).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+
             document.getElementById('movie-info-container').innerHTML = `
-                <img src="${currentItem.poster}" style="width: 80px; height: 110px; object-fit: cover; border-radius: 4px; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">
+                <img src="${currentItem.poster}" style="width: 90px; height: 125px; object-fit: cover; border-radius: 6px; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">
                 <div style="display:flex; flex-direction:column; justify-content:center;">
-                    <div style="font-family:var(--font-heading); font-size:1.5rem; line-height:1.2; margin-bottom:5px;">${currentItem.title}</div>
-                    <span class="text-muted" style="font-size:0.85rem; text-transform:uppercase; letter-spacing:1px;">
-                        ${type === 'movie' ? currentItem.genre : currentItem.date}
-                    </span>
+                    <div style="font-family:var(--font-heading); font-size:1.4rem; line-height:1.2; margin-bottom:5px;">${currentItem.title}</div>
+                    <div style="font-size:0.75rem; color:var(--primary-color); margin-top:2px; margin-bottom:6px; text-transform:uppercase; font-weight:700; background:#f4f0ff; padding:4px 8px; display:inline-block; border-radius:4px; align-self:flex-start;">
+                        ${currentDisplayDate} • ${currentShowTime}
+                    </div>
+                    <span class="text-main" style="font-size:0.9rem; font-weight:600; display:flex; align-items:center; gap:5px;"><span style="color:#e74c3c; font-size:0.8rem;">❤</span> ${thBrand}</span>
+                    <span class="text-muted" style="font-size:0.8rem; margin-top:2px; margin-left:18px;">${thSub}</span>
                 </div>
             `;
 
             renderVenueLayout();
             updateCartUI();
-        });
 
+            // Small delay to ensure DOM is ready
+            await new Promise(resolve => setTimeout(resolve, 200));
+
+            // Fetch and Map Booked Seats
+            if (type === 'movie') {
+                try {
+                    const seatsRes = await fetch(`http://localhost:5000/api/seats/${id}`);
+                    if (seatsRes.ok) {
+                        const bookedSeatsArray = await seatsRes.json();
+
+                        // Populate dummy bookings visually if none exist natively yet
+                        if (bookedSeatsArray.length === 0) {
+                            bookedSeatsArray.push(
+                                'REC-R1C3', 'REC-R1C4',
+                                'PRM-R2C5', 'PRM-R2C6', 'PRM-R2C7',
+                                'PRM-R3C2', 'PRM-R3C3',
+                                'CLS-R1C10', 'CLS-R1C11', 'CLS-R3C5'
+                            );
+                        }
+
+                        document.querySelectorAll('.seat').forEach(seat => {
+                            const dataId = seat.getAttribute('data-id');
+                            if (bookedSeatsArray.some(label => label === dataId || label.startsWith(dataId + ' '))) {
+                                seat.classList.add('booked');
+                                seat.style.pointerEvents = 'none';
+                                seat.style.backgroundColor = '#e74c3c'; // Reinstate red hue
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.error("Failed to fetch booked seats:", e);
+                }
+            }
+        });
         // ------------------------------------
         // LAYOUT ENGINES
         // ------------------------------------
@@ -262,7 +342,7 @@
                 for (let c = 0; c < 8; c++) {
                     if (c === 4) html += `<div style="width:20px;"></div>`;
                     const seatId = `REC-R${r + 1}C${c + 1}`;
-                    const isBooked = Math.random() < 0.2 ? 'booked' : '';
+                    const isBooked = '';
                     html += `<div class="seat recliner ${isBooked}" data-id="${seatId}" data-tier="Recliner" data-price="500"></div>`;
                 }
                 html += `</div>`;
@@ -275,7 +355,7 @@
                 for (let c = 0; c < 12; c++) {
                     if (c === 6) html += `<div style="width:20px;"></div>`;
                     const seatId = `PRM-R${r + 1}C${c + 1}`;
-                    const isBooked = Math.random() < 0.3 ? 'booked' : '';
+                    const isBooked = '';
                     html += `<div class="seat premium ${isBooked}" data-id="${seatId}" data-tier="Premium" data-price="350"></div>`;
                 }
                 html += `</div>`;
@@ -288,7 +368,7 @@
                 for (let c = 0; c < 14; c++) {
                     if (c === 7) html += `<div style="width:20px;"></div>`;
                     const seatId = `CLS-R${r + 1}C${c + 1}`;
-                    const isBooked = Math.random() < 0.4 ? 'booked' : '';
+                    const isBooked = '';
                     html += `<div class="seat ${isBooked}" data-id="${seatId}" data-tier="Classic" data-price="200"></div>`;
                 }
                 html += `</div>`;
@@ -391,30 +471,54 @@
 
         function updateCartUI() {
             const listEl = document.getElementById('cart-items');
+            const breakdownEl = document.getElementById('cart-breakdown');
             const totalEl = document.getElementById('total-price');
             const btn = document.getElementById('proceed-btn');
 
             listEl.innerHTML = '';
-            let total = 0;
+            breakdownEl.innerHTML = '';
+            let subtotal = 0;
+            let finalTotal = 0;
 
             if (cart.length === 0) {
                 listEl.innerHTML = '<div class="text-muted" style="text-align:center; padding: 20px 0; font-size:0.8rem;">No tickets selected yet.</div>';
             } else {
                 cart.forEach(item => {
-                    total += item.price;
+                    subtotal += item.price;
                     listEl.innerHTML += `
-                        <div class="selection-item">
+                        <div class="selection-item" style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:0.95rem;">
                             <span>${item.name}</span>
-                            <span>₹${item.price} <button onclick="removeCartItem('${item.id}')" style="background:none; border:none; color:var(--primary-color); cursor:pointer; margin-left:10px;">✕</button></span>
+                            <span>₹${item.price} <button onclick="removeCartItem('${item.id}')" style="background:none; border:none; color:#e74c3c; cursor:pointer; margin-left:8px; font-weight:bold;">✕</button></span>
                         </div>
                     `;
                 });
+                
+                const convFee = cart.length * 35; // ₹35 per ticket conv fee
+                const gst = Math.round((subtotal + convFee) * 0.18);
+                finalTotal = subtotal + convFee + gst;
+
+                breakdownEl.innerHTML = `
+                    <div style="border-top: 1px dashed var(--border-color); padding-top: 15px; margin-top: 15px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px; color:var(--text-muted); font-size:0.85rem;">
+                            <span>Subtotal</span>
+                            <span>₹${subtotal}</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px; color:var(--text-muted); font-size:0.85rem;">
+                            <span>Convenience Fee</span>
+                            <span>₹${convFee}</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px; color:var(--text-main); font-weight:600; font-size:0.85rem;">
+                            <span>GST (18%)</span>
+                            <span>₹${gst}</span>
+                        </div>
+                    </div>
+                `;
             }
 
             // Animate number change slightly
             totalEl.style.transform = 'scale(1.2)';
             setTimeout(() => totalEl.style.transform = 'scale(1)', 150);
-            totalEl.innerText = `₹${total}`;
+            totalEl.innerText = `₹${finalTotal}`;
 
             if (cart.length > 0) {
                 btn.removeAttribute('disabled');
@@ -428,54 +532,45 @@
         }
 
         document.getElementById('proceed-btn').addEventListener('click', async () => {
-    const user = localStorage.getItem('currentUser');
-    const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('currentUser');
+            const token = localStorage.getItem('token');
 
-    if (!user || !token) {
-        alert("Please log in to proceed to payment.");
-        window.location.href = "login.html";
-        return;
-    }
+            if (!userStr || !token) {
+                alert("Please log in to proceed to payment.");
+                window.location.href = "login.html";
+                return;
+            }
 
-    const total = cart.reduce((sum, i) => sum + i.price, 0);
-    const seats = cart.map(i => i.name).join(', ');
+            const subtotal = cart.reduce((sum, i) => sum + i.price, 0);
+            const convFee = cart.length * 35;
+            const gst = Math.round((subtotal + convFee) * 0.18);
+            const total = subtotal + convFee + gst;
 
-    try {
-        const res = await fetch('http://localhost:5000/api/bookings', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
+            const seats = cart.map(i => i.name).join(', ');
+
+            // Redirect to Addons page with seat details
+            const pendingCheckout = {
                 movie_id: currentItem.id,
-                seats: seats,
-                total_price: total
-            })
-        });
-
-        const data = await res.json();
-
-        if (res.ok) {
-            const bookingData = {
                 item: currentItem,
-                seats: cart.map(i => i.name),
-                total: total,
-                date: new Date().toLocaleDateString(),
-                booking_id: data.booking_id
+                seats: seats,
+                seatNames: cart.map(i => i.name),
+                seatSubtotal: subtotal,
+                convFee: convFee,
+                seatGst: gst,
+                seatTotal: total,
+                city: currentCity,
+                theatre: currentTheatre,
+                date: currentDisplayDate,
+                apiDate: currentShowDate,
+                time: currentShowTime
             };
-            localStorage.setItem("currentBooking", JSON.stringify(bookingData));
+
+            localStorage.setItem("pendingCheckout", JSON.stringify(pendingCheckout));
             document.body.classList.add('page-transitioning');
-            setTimeout(() => window.location.href = "payment.html", 400);
-        } else {
-            alert(data.message || "Booking failed. Try again.");
-        }
-    } catch (error) {
-        console.log(error);
-        alert("Cannot connect to server. Make sure backend is running.");
-    }
-});
+            setTimeout(() => window.location.href = "addons.html", 400);
+        });
     </script>
+
 </body>
 
 </html>

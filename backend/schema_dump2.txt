@@ -1,0 +1,32 @@
+CREATE TABLE `bookings` (
+  `booking_id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `movie_id` int NOT NULL,
+  `seats` varchar(255) DEFAULT NULL,
+  `total_price` decimal(8,2) DEFAULT NULL,
+  `status` enum('confirmed','cancelled') DEFAULT 'confirmed',
+  `booked_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `city` varchar(50) DEFAULT 'Delhi',
+  `theatre_name` varchar(150) DEFAULT NULL,
+  `show_date` date DEFAULT NULL,
+  `show_time` varchar(20) DEFAULT NULL,
+  `food_items` varchar(500) DEFAULT '',
+  PRIMARY KEY (`booking_id`),
+  KEY `user_id` (`user_id`),
+  KEY `movie_id` (`movie_id`),
+  CONSTRAINT `bookings_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
+  CONSTRAINT `bookings_ibfk_2` FOREIGN KEY (`movie_id`) REFERENCES `movies` (`movie_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+
+CREATE TABLE `seats` (
+  `seat_id` int NOT NULL AUTO_INCREMENT,
+  `movie_id` int NOT NULL,
+  `seat_label` varchar(50) DEFAULT NULL,
+  `is_booked` tinyint(1) DEFAULT '0',
+  `booked_by` int DEFAULT NULL,
+  PRIMARY KEY (`seat_id`),
+  KEY `movie_id` (`movie_id`),
+  KEY `booked_by` (`booked_by`),
+  CONSTRAINT `seats_ibfk_1` FOREIGN KEY (`movie_id`) REFERENCES `movies` (`movie_id`),
+  CONSTRAINT `seats_ibfk_2` FOREIGN KEY (`booked_by`) REFERENCES `users` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci

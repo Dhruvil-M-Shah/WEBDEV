@@ -1,0 +1,1 @@
+Cannot delete or update a parent row: a foreign key constraint fails (`moviebooking`.`bookings`, CONSTRAINT `bookings_ibfk_2` FOREIGN KEY (`movie_id`) REFERENCES `movies` (`movie_id`))

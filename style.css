@@ -1235,17 +1235,137 @@ footer {
     align-items: center;
 }
 
+/* ------------------------------------
+   RESPONSIVE DESIGN (Media Queries)
+------------------------------------ */
+
+@media (min-width: 769px) {
+    .hamburger-btn { display: none; }
+    .drawer-overlay, .mobile-drawer { display: none !important; }
+}
+
+@media (max-width: 1024px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+    .nav-links { gap: 15px; }
+}
+
 @media (max-width: 900px) {
     .booking-section {
-        flex-direction: column;
+        grid-template-columns: 1fr;
     }
-
     h1 {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
     }
-
     .stadium-layout {
         width: 100%;
         height: 300px;
     }
+    .featured-banner {
+        flex-direction: column;
+        text-align: center;
+        padding: 40px 20px;
+    }
+    .featured-badges, .featured-actions {
+        justify-content: center;
+    }
+    .featured-poster img {
+        max-width: 250px;
+        height: auto;
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Navbar & Drawer */
+    .logo { font-size: 1.25rem; letter-spacing: -0.2px; }
+    .nav-links, .desktop-user-menu { display: none !important; }
+    .nav-container { flex-wrap: wrap; height: auto; padding: 15px 0; }
+    .nav-left { flex: 1; min-width: auto; }
+    .nav-right { flex: 0; min-width: auto; gap: 10px; }
+    .nav-center { order: 3; width: 100%; margin-top: 15px; flex: 100%; display: flex; }
+    #global-search { width: 100%; }
+    body.has-search-bar .hero-banner { padding-top: 170px !important; }
+    body.has-search-bar .main-content { margin-top: 150px !important; }
+    .hamburger-btn {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        width: 30px;
+        height: 24px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        margin-left: 10px;
+    }
+    .hamburger-line {
+        width: 100%;
+        height: 3px;
+        background: var(--ink-brown);
+        border-radius: 10px;
+        transition: all 0.3s linear;
+    }
+    .drawer-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5); z-index: 1050;
+        opacity: 0; visibility: hidden; transition: all 0.3s ease;
+    }
+    .drawer-overlay.active { opacity: 1; visibility: visible; }
+    .mobile-drawer {
+        position: fixed; top: 0; left: -300px; width: 280px; height: 100%;
+        background: var(--bg-color); z-index: 1060;
+        box-shadow: 2px 0 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+        display: flex; flex-direction: column;
+    }
+    .mobile-drawer.active { transform: translateX(300px); }
+    .drawer-header {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 20px; border-bottom: 1px solid var(--border-color);
+    }
+    .drawer-close {
+        background: none; border: none; font-size: 2rem;
+        cursor: pointer; color: var(--text-muted);
+    }
+    .drawer-content { padding: 20px; overflow-y: auto; flex: 1; }
+    .drawer-link {
+        display: block; padding: 12px 0; font-size: 1.1rem;
+        font-weight: 500; color: var(--text-main); border-bottom: 1px solid var(--border-color);
+    }
+
+    /* Layout & Utilities */
+    .grid { grid-template-columns: 1fr; }
+    .container { padding: 0 15px; }
+    .main-content { padding-top: 30px; padding-left: 15px; padding-right: 15px; }
+    img { max-width: 100%; }
+    
+    /* Typography & Buttons */
+    .hero-title { font-size: 2rem; }
+    .hero-banner { padding: 30px 15px; min-height: 400px; }
+    .hero-actions { flex-direction: column; width: 100%; align-items: stretch; }
+    .hero-meta { flex-wrap: wrap; justify-content: center; }
+    .btn {
+        width: 100%; min-height: 44px; justify-content: center;
+        display: flex; align-items: center;
+    }
+    
+    /* Featured Banner */
+    .featured-title { font-size: 1.5rem; }
+    .f-badge { padding: 4px 10px; font-size: 0.75rem; }
+    
+    /* Auth Pages */
+    .auth-box { padding: 25px 15px; width: 100%; margin: 15px; box-sizing: border-box; }
+    .auth-wrapper { padding: 20px 10px; }
+    input { width: 100% !important; }
+
+    /* Booking Page */
+    .seat-map-container { padding: 20px 10px; overflow-x: auto; }
+    .seat { width: 30px; height: 30px; font-size: 0.7rem; margin: 2px; }
+    .seat.recliner { width: 34px; height: 34px; }
+    .seat-legend { flex-direction: column; gap: 10px; align-items: center; }
+    .booking-summary { position: static; margin-top: 20px; width: 100%; }
+
+    /* Footer */
+    .flex-between { flex-direction: column; align-items: flex-start !important; gap: 20px; }
+    .footer-col { width: 100%; max-width: 100% !important; }
 }

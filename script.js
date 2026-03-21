@@ -70,6 +70,12 @@ function renderNavbar() {
     const navContainer = document.getElementById("navbar-container");
     if (!navContainer) return;
 
+    const currentPage = window.location.pathname.split("/").pop().replace(/%20/g, ' ');
+    const checkoutPages = ['booking.html', 'addons.html', 'payment.html', 'theatre-selection.html'];
+    const hideSearch = checkoutPages.includes(currentPage);
+
+    if (!hideSearch) document.body.classList.add('has-search-bar');
+
     const userStr = localStorage.getItem("currentUser");
     let userHtml = '';
 
@@ -101,31 +107,85 @@ function renderNavbar() {
                     <a href="HOME PAGE.html" class="logo transition-link">Movie Ticket System</a>
                     <div class="nav-links" style="margin-left:20px;">
                         <a href="movies.html" class="transition-link">Movies</a>
+                        <a href="admin-login.html" class="transition-link" style="color:var(--primary-color); font-weight:600; margin-left:10px;">Admin Portal</a>
                     </div>
                 </div>
-                <div class="nav-center">
+                <div class="nav-center" style="${hideSearch ? 'display: none !important;' : ''}">
                     <input type="text" id="global-search" placeholder="Search movies...">
                 </div>
                 <div class="nav-right">
                     <select class="city-selector" onchange="changeCity(this.value)">
                         ${cityOptions}
                     </select>
-                    ${userHtml}
+                    <div class="desktop-user-menu">
+                        ${userHtml}
+                    </div>
+                    <button class="hamburger-btn" onclick="toggleMobileDrawer()">
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                    </button>
                 </div>
             </div>
         </nav>
+
+        <div class="drawer-overlay" id="mobile-drawer-overlay" onclick="toggleMobileDrawer()"></div>
+        <div class="mobile-drawer" id="mobile-drawer">
+            <div class="drawer-header">
+                 <div class="logo" style="font-size:1.2rem;">Menu</div>
+                 <button class="drawer-close" onclick="toggleMobileDrawer()">×</button>
+            </div>
+            <div class="drawer-content">
+                <a href="HOME PAGE.html" class="transition-link drawer-link">Home</a>
+                <a href="movies.html" class="transition-link drawer-link">Movies</a>
+                <a href="admin-login.html" class="transition-link drawer-link" style="color:var(--primary-color); font-weight:600;">Admin Portal</a>
+                
+                <hr style="border:none; border-top:1px solid var(--border-color); margin: 20px 0;">
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform:uppercase;">Select City</label>
+                    <select class="city-selector" style="width: 100%; margin-top: 5px;" onchange="changeCity(this.value)">
+                        ${cityOptions}
+                    </select>
+                </div>
+                
+                ${userStr ? `
+                    <div class="user-info" style="margin-bottom: 20px; background: var(--surface-deep); padding: 15px; border-radius: var(--radius-sm);">
+                        <div style="font-weight: 600; text-transform:uppercase; margin-bottom: 10px; font-size: 0.9rem;">
+                            Hi, ${JSON.parse(userStr).name.split(' ')[0]}
+                        </div>
+                        <a href="profile.html" class="transition-link btn btn-outline btn-block" style="margin-bottom:10px;">My Profile</a>
+                        <button class="btn btn-primary btn-block" onclick="logout()">Logout</button>
+                    </div>
+                ` : `
+                    <div style="display:flex; flex-direction:column; gap:10px;">
+                        <a href="login.html" class="btn btn-outline btn-block">Login</a>
+                        <a href="signup.html" class="btn btn-primary btn-block">Signup</a>
+                    </div>
+                `}
+            </div>
+        </div>
     `;
     navContainer.innerHTML = navbarHtml;
 
     // Active Link styling
-    const currentPage = window.location.pathname.split("/").pop().replace(/%20/g, ' ');
-    const links = navContainer.querySelectorAll('.nav-left .nav-links a');
+    const links = navContainer.querySelectorAll('.nav-links a, .drawer-link');
     links.forEach(link => {
         if (link.getAttribute('href') === currentPage ||
             (currentPage === 'HOME PAGE.html' && link.getAttribute('href') === 'movies.html')) {
             link.classList.add('active');
         }
     });
+}
+
+function toggleMobileDrawer() {
+    const drawer = document.getElementById('mobile-drawer');
+    const overlay = document.getElementById('mobile-drawer-overlay');
+    if (drawer && overlay) {
+        drawer.classList.toggle('active');
+        overlay.classList.toggle('active');
+        document.body.style.overflow = drawer.classList.contains('active') ? 'hidden' : '';
+    }
 }
 
 function setupGlobalSearch() {
@@ -255,7 +315,9 @@ function getUrlParameter(name) {
 
 function generateCardHTML(item, type = 'movie') {
     let detailLink = type === 'movie' ? `movie-detail.html?id=${item.id}` : `booking.html?id=${item.id}&type=${type}`;
-    let bookLink = `booking.html?id=${item.id}&type=${type}`;
+    let bookLink = type === 'movie'
+        ? `theatre-selection.html?id=${item.id}&type=movie&city=${localStorage.getItem('selectedCity') || 'Delhi'}`
+        : `booking.html?id=${item.id}&type=${type}`;
 
     let subtitle = type === 'movie' ? item.genre : item.date;
     let extra = type === 'movie' ? `<span class="rating">★ ${item.rating}</span>` : `<span style="color:var(--text-main); font-weight:700;">${item.location}</span>`;

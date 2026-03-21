@@ -269,6 +269,11 @@
                                 id="ticket-seats">R1C2</div>
                         </div>
                     </div>
+                    <!-- F&B Display -->
+                    <div id="ticket-food-container" style="display:none; text-align:center; margin-top:15px; background:rgba(200, 169, 81, 0.1); padding:10px; border-radius:var(--radius-sm); border: 1px dashed rgba(200, 169, 81, 0.4);">
+                        <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:5px; font-weight: 700;">Add-ons Included</div>
+                        <div style="font-weight:700; font-size:0.95rem; color:var(--ink-brown);" id="ticket-food"></div>
+                    </div>
                 </div>
                 <div class="ticket-footer">
                     <div class="ticket-barcode">
@@ -384,6 +389,12 @@
 
             document.getElementById("ticket-date").innerText = bookingData.date;
             document.getElementById("ticket-seats").innerText = bookingData.seats.join(", ");
+            
+            if (bookingData.foodStr && bookingData.foodStr.length > 0) {
+                document.getElementById("ticket-food-container").style.display = "block";
+                document.getElementById("ticket-food").innerText = "🍿 " + bookingData.foodStr;
+            }
+
             document.getElementById("ticket-amount").innerText = `Total Paid: ₹${bookingData.total}`;
 
             triggerConfetti();

@@ -1,0 +1,14 @@
+CREATE TABLE `payments` (
+  `payment_id` int NOT NULL AUTO_INCREMENT,
+  `booking_id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `amount` decimal(8,2) NOT NULL,
+  `method` varchar(20) NOT NULL,
+  `status` enum('success','failed') DEFAULT 'success',
+  `paid_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`payment_id`),
+  KEY `booking_id` (`booking_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`booking_id`),
+  CONSTRAINT `payments_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci

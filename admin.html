@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Movie Ticket System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6c35de;
+            --primary-dark: #5a28c0;
+            --primary-light: #f3eeff;
+            --primary-glow: rgba(108, 53, 222, 0.15);
+            --text: #1a1a1a;
+            --text-muted: #999;
+            --border: #eeeeee;
+            --bg: #f7f7fb;
+            --white: #ffffff;
+            --success: #2e7d32;
+            --success-bg: #e8f5e9;
+            --danger: #c62828;
+            --danger-bg: #ffebee;
+            --warning: #ef6c00;
+            --warning-bg: #fff3e0;
+            --radius: 12px;
+            --shadow: 0 2px 16px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        /* ════════════════════════ SIDEBAR ════════════════════════ */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 250px;
+            z-index: 100;
+            background: linear-gradient(180deg, #6c35de 0%, #5226b5 100%);
+            display: flex;
+            flex-direction: column;
+            color: #fff;
+        }
+
+        .sidebar-brand {
+            padding: 30px 24px 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .sidebar-brand h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .sidebar-brand small {
+            font-size: 0.7rem;
+            opacity: 0.55;
+            display: block;
+            margin-top: 3px;
+            font-weight: 400;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 20px 0;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 13px 24px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-nav a:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .sidebar-nav a.active {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.12);
+            border-left-color: #fff;
+            font-weight: 600;
+        }
+
+        .sidebar-nav a .nav-icon {
+            font-size: 1.15rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .sidebar-bottom {
+            padding: 18px 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .btn-logout {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            background: transparent;
+            color: #fff;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* ════════════════════════ MAIN ════════════════════════ */
+        .main {
+            margin-left: 250px;
+            padding: 32px 36px;
+            min-height: 100vh;
+        }
+
+        .page-head {
+            margin-bottom: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-head h1 {
+            font-size: 1.65rem;
+            font-weight: 700;
+        }
+
+        .page-head p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 2px;
+        }
+
+        /* ════════════════════════ STAT CARDS ════════════════════════ */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 24px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .stat-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: var(--primary-light);
+            flex-shrink: 0;
+        }
+
+        .stat-info .num {
+            font-size: 1.8rem;
+            font-weight: 700;
+            line-height: 1.1;
+            color: var(--text);
+        }
+
+        .stat-info .lbl {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+
+        /* ════════════════════════ CARDS / TABLES ════════════════════════ */
+        .card {
+            background: var(--white);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .card-head {
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-head h2 {
+            font-size: 1.05rem;
+            font-weight: 700;
+        }
+
+        .tbl-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        thead th {
+            text-align: left;
+            padding: 13px 20px;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.76rem;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            white-space: nowrap;
+        }
+
+        tbody td {
+            padding: 13px 20px;
+            border-bottom: 1px solid #f8f8f8;
+            color: #555;
+        }
+
+        tbody tr:hover {
+            background: #fcfcff;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* ════════════════════════ BADGES ════════════════════════ */
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .badge-green {
+            background: var(--success-bg);
+            color: var(--success);
+        }
+
+        .badge-red {
+            background: var(--danger-bg);
+            color: var(--danger);
+        }
+
+        .badge-orange {
+            background: var(--warning-bg);
+            color: var(--warning);
+        }
+
+        .badge-purple {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        /* ════════════════════════ BUTTONS ════════════════════════ */
+        .btn {
+            padding: 10px 22px;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-purple {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .btn-purple:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px var(--primary-glow);
+        }
+
+        .btn-red {
+            background: var(--danger);
+            color: #fff;
+            font-size: 0.78rem;
+            padding: 7px 14px;
+        }
+
+        .btn-red:hover {
+            opacity: 0.85;
+        }
+
+        .btn-edit {
+            background: #e3f2fd;
+            color: #1565c0;
+            font-size: 0.78rem;
+            padding: 7px 14px;
+        }
+
+        .btn-edit:hover {
+            background: #bbdefb;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .btn-ghost:hover {
+            background: #f5f5f5;
+        }
+
+        /* ════════════════════════ MODAL ════════════════════════ */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 300;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-box {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 36px;
+            width: 560px;
+            max-width: 94vw;
+            max-height: 88vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+            animation: slideUp 0.25s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px)scale(0.98)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)scale(1)
+            }
+        }
+
+        .modal-box h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+
+        .fg {
+            margin-bottom: 16px;
+        }
+
+        .fg label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 6px;
+        }
+
+        .fg input,
+        .fg textarea,
+        .fg select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.88rem;
+            background: var(--bg);
+            transition: border 0.2s;
+        }
+
+        .fg input:focus,
+        .fg textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        .fg textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        .row2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .row3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 14px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        /* ════════════════════════ SECTIONS ════════════════════════ */
+        .section {
+            display: none;
+        }
+
+        .section.visible {
+            display: block;
+        }
+
+        /* ════════════════════════ STATES ════════════════════════ */
+        .loading {
+            text-align: center;
+            padding: 48px;
+            color: var(--text-muted);
+            font-size: 0.88rem;
+        }
+
+        .loading::before {
+            content: '';
+            display: block;
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin: 0 auto 12px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        .empty {
+            text-align: center;
+            padding: 48px;
+            color: var(--text-muted);
+            font-size: 0.88rem;
+        }
+
+        .err {
+            text-align: center;
+            padding: 36px;
+            color: var(--danger);
+            font-size: 0.88rem;
+        }
+
+        /* ════════════════════════ RESPONSIVE ════════════════════════ */
+        @media(max-width:1100px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .admin-hamburger { display: none; background: transparent; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text); }
+        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 90; opacity: 0; transition: opacity 0.3s; }
+        .sidebar-overlay.active { display: block; opacity: 1; }
+
+        @media(max-width:768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                width: 250px;
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .admin-hamburger { display: block; margin-right: 15px; }
+            
+            .page-head { justify-content: flex-start; gap: 10px; }
+            .page-head button { margin-left: auto; }
+            .page-head h1 { font-size: 1.3rem; }
+
+            .main {
+                margin-left: 0;
+                padding: 20px 15px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-box {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ═══════════════ SIDEBAR ═══════════════ -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <h2>🎬 Admin Panel</h2>
+            <small>Movie Ticket System</small>
+        </div>
+        <nav class="sidebar-nav" id="sidebar-nav">
+            <a href="#" class="active" data-sec="dashboard"><span class="nav-icon">📊</span> <span>Dashboard</span></a>
+            <a href="#" data-sec="movies"><span class="nav-icon">🎬</span> <span>Movies</span></a>
+            <a href="#" data-sec="users"><span class="nav-icon">👥</span> <span>Users</span></a>
+            <a href="#" data-sec="bookings"><span class="nav-icon">🎟️</span> <span>Bookings</span></a>
+            <a href="#" data-sec="payments"><span class="nav-icon">💳</span> <span>Payments</span></a>
+            <a href="#" data-sec="food"><span class="nav-icon">🍔</span> <span>Food Menu</span></a>
+        </nav>
+        <div class="sidebar-bottom">
+            <button class="btn-logout" onclick="adminLogout()">🚪 <span>Logout</span></button>
+        </div>
+    </aside>
+
+    <!-- ═══════════════ MAIN ═══════════════ -->
+    <div class="sidebar-overlay" id="admin-overlay" onclick="toggleAdminSidebar()"></div>
+    <div class="main">
+
+        <!-- ─── DASHBOARD ─── -->
+        <div id="sec-dashboard" class="section visible">
+            <div class="page-head">
+                <button class="admin-hamburger" onclick="toggleAdminSidebar()">☰</button>
+                <div>
+                    <h1>Dashboard</h1>
+                    <p>Overview of your platform</p>
+                </div>
+            </div>
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-icon">🎬</div>
+                    <div class="stat-info">
+                        <div class="num" id="s-movies">—</div>
+                        <div class="lbl">Total Movies</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-info">
+                        <div class="num" id="s-users">—</div>
+                        <div class="lbl">Total Users</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🎟️</div>
+                    <div class="stat-info">
+                        <div class="num" id="s-bookings">—</div>
+                        <div class="lbl">Total Bookings</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info">
+                        <div class="num" id="s-revenue">—</div>
+                        <div class="lbl">Total Revenue</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-head">
+                    <h2>Recent Bookings</h2>
+                </div>
+                <div class="tbl-wrap" id="dash-recent">
+                    <div class="loading">Loading…</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── MOVIES ─── -->
+        <div id="sec-movies" class="section">
+            <div class="page-head">
+                <button class="admin-hamburger" onclick="toggleAdminSidebar()">☰</button>
+                <div>
+                    <h1>Manage Movies</h1>
+                    <p>Add, edit, or remove movies</p>
+                </div>
+                <button class="btn btn-purple" onclick="openModal()">+ Add</button>
+            </div>
+            <div class="card">
+                <div class="tbl-wrap" id="tbl-movies">
+                    <div class="loading">Loading…</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── USERS ─── -->
+        <div id="sec-users" class="section">
+            <div class="page-head">
+                <button class="admin-hamburger" onclick="toggleAdminSidebar()">☰</button>
+                <div>
+                    <h1>All Users</h1>
+                    <p>Registered platform users</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="tbl-wrap" id="tbl-users">
+                    <div class="loading">Loading…</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── BOOKINGS ─── -->
+        <div id="sec-bookings" class="section">
+            <div class="page-head">
+                <button class="admin-hamburger" onclick="toggleAdminSidebar()">☰</button>
+                <div>
+                    <h1>All Bookings</h1>
+                    <p>Every booking record</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="tbl-wrap" id="tbl-bookings">
+                    <div class="loading">Loading…</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── PAYMENTS ─── -->
+        <div id="sec-payments" class="section">
+            <div class="page-head">
+                <button class="admin-hamburger" onclick="toggleAdminSidebar()">☰</button>
+                <div>
+                    <h1>All Payments</h1>
+                    <p>Payment transaction log</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="tbl-wrap" id="tbl-payments">
+                    <div class="loading">Loading…</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── FOOD MENU ─── -->
+        <div id="sec-food" class="section">
+            <div class="page-head">
+                <button class="admin-hamburger" onclick="toggleAdminSidebar()">☰</button>
+                <div>
+                    <h1>Manage Food Menu</h1>
+                    <p>Add, edit, or remove F&B items</p>
+                </div>
+                <button class="btn btn-purple" onclick="openFoodModal()">+ Add</button>
+            </div>
+            <div class="card">
+                <div class="tbl-wrap" id="tbl-food">
+                    <div class="loading">Loading…</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ ADD / EDIT MOVIE MODAL ═══════════════ -->
+    <div class="modal-overlay" id="movie-modal">
+        <div class="modal-box">
+            <h2 id="modal-title">Add New Movie</h2>
+            <form id="movie-form" onsubmit="saveMovie(event)">
+                <input type="hidden" id="edit-id">
+                <div class="fg"><label>Title</label><input type="text" id="f-title" required></div>
+                <div class="row2">
+                    <div class="fg"><label>Genre</label><input type="text" id="f-genre" placeholder="Action, Drama"
+                            required></div>
+                    <div class="fg"><label>Language</label><input type="text" id="f-language" placeholder="Hindi"
+                            required></div>
+                </div>
+                <div class="row3">
+                    <div class="fg"><label>Duration (mins)</label><input type="number" id="f-duration"
+                            placeholder="150"></div>
+                    <div class="fg"><label>Rating</label><input type="number" step="0.1" id="f-rating"
+                            placeholder="8.5"></div>
+                    <div class="fg"><label>Censor</label><input type="text" id="f-censor" placeholder="U/A"></div>
+                </div>
+                <div class="fg"><label>Synopsis</label><textarea id="f-synopsis"
+                        placeholder="Short description…"></textarea></div>
+                <div class="fg"><label>Poster URL</label><input type="url" id="f-poster" placeholder="https://…"></div>
+                <div class="fg"><label>Trailer URL</label><input type="url" id="f-trailer"
+                        placeholder="https://youtube.com/embed/…"></div>
+                <div class="fg"><label>Hero Image URL</label><input type="url" id="f-hero"
+                        placeholder="https://… (optional)"></div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-purple" id="modal-save-btn">Save Movie</button>
+                    <button type="button" class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ═══════════════ ADD / EDIT FOOD MODAL ═══════════════ -->
+    <div class="modal-overlay" id="food-modal">
+        <div class="modal-box">
+            <h2 id="food-modal-title">Add New Food</h2>
+            <form id="food-form" onsubmit="saveFood(event)">
+                <input type="hidden" id="f-edit-id">
+                <div class="fg"><label>Name</label><input type="text" id="f-name" required></div>
+                <div class="row2">
+                    <div class="fg"><label>Price (₹)</label><input type="number" id="f-price" required></div>
+                    <div class="fg"><label>Icon/Emoji</label><input type="text" id="f-icon" placeholder="🍔" required></div>
+                </div>
+                <div class="fg"><label>Description</label><textarea id="f-desc" placeholder="A tasty treat..." required></textarea></div>
+                
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-purple" id="food-modal-save-btn">Save Food</button>
+                    <button type="button" class="btn btn-ghost" onclick="closeFoodModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API = 'http://localhost:5000/api';
+        const headers = () => ({
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+        });
+
+        // ── Auth Guard ──
+        if (localStorage.getItem('isAdmin') !== 'true' || !localStorage.getItem('adminToken')) {
+            window.location.href = 'admin-login.html';
+        }
+
+        function adminLogout() {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('isAdmin');
+            window.location.href = 'admin-login.html';
+        }
+
+        function toggleAdminSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+            document.getElementById('admin-overlay').classList.toggle('active');
+        }
+
+        // ── Navigation ──
+        document.querySelectorAll('#sidebar-nav a').forEach(link => {
+            link.addEventListener('click', e => {
+                e.preventDefault();
+                const sec = link.dataset.sec;
+                document.querySelectorAll('#sidebar-nav a').forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
+                document.getElementById('sec-' + sec).classList.add('visible');
+                load(sec);
+            });
+        });
+
+        function load(sec) {
+            if (sec === 'dashboard') loadDashboard();
+            else if (sec === 'movies') loadMovies();
+            else if (sec === 'users') loadUsers();
+            else if (sec === 'bookings') loadBookings();
+            else if (sec === 'payments') loadPayments();
+            else if (sec === 'food') loadFood();
+        }
+
+        async function api(url) {
+            const r = await fetch(url, { headers: headers() });
+            if (!r.ok) throw new Error(`HTTP ${r.status}`);
+            return r.json();
+        }
+
+        // ════════════════════ DASHBOARD ════════════════════
+        async function loadDashboard() {
+            // Try stats endpoint first, fallback to individual
+            try {
+                const s = await api(`${API}/admin/stats`);
+                document.getElementById('s-movies').textContent = s.total_movies ?? '—';
+                document.getElementById('s-users').textContent = s.total_users ?? '—';
+                document.getElementById('s-bookings').textContent = s.total_bookings ?? '—';
+                document.getElementById('s-revenue').textContent = '₹' + Number(s.total_revenue || 0).toLocaleString();
+            } catch {
+                // Fallback: fetch individually
+                try { const m = await api(`${API}/movies`); document.getElementById('s-movies').textContent = m.length; } catch { document.getElementById('s-movies').textContent = '—'; }
+                try { const u = await api(`${API}/admin/users`); document.getElementById('s-users').textContent = u.length; } catch { document.getElementById('s-users').textContent = '—'; }
+                try {
+                    const b = await api(`${API}/admin/bookings`);
+                    document.getElementById('s-bookings').textContent = b.length;
+                    renderRecent(b);
+                } catch { document.getElementById('s-bookings').textContent = '—'; }
+                try { const r = await api(`${API}/admin/revenue`); document.getElementById('s-revenue').textContent = '₹' + Number(r.total_revenue || r.total || 0).toLocaleString(); } catch { document.getElementById('s-revenue').textContent = '—'; }
+                return;
+            }
+
+            // Load recent bookings
+            try {
+                const b = await api(`${API}/admin/bookings`);
+                renderRecent(b);
+            } catch { document.getElementById('dash-recent').innerHTML = '<div class="err">Failed to load bookings</div>'; }
+        }
+
+        function renderRecent(arr) {
+            const el = document.getElementById('dash-recent');
+            if (!arr || !arr.length) { el.innerHTML = '<div class="empty">No bookings yet</div>'; return; }
+            const rows = arr.slice(0, 5);
+            el.innerHTML = `<table><thead><tr><th>ID</th><th>User</th><th>Movie</th><th>Seats</th><th>Amount</th><th>Location</th><th>Showtime</th><th>Status</th></tr></thead>
+        <tbody>${rows.map(b => {
+            const tCount = b.seats ? b.seats.split(',').length : 0;
+            const convFee = tCount * 35;
+            const subPlusFee = b.total_price / 1.18;
+            const gst = Math.round(b.total_price - subPlusFee);
+            return `<tr>
+            <td>#${b.booking_id}</td>
+            <td>${b.user_name || b.name || '—'}</td>
+            <td>${b.title || b.movie_title || '—'}</td>
+            <td>
+                <div style="margin-bottom:2px;">${b.seats || '—'}</div>
+                ${b.food_items ? `<div style="font-size:0.75rem; color:var(--warning); font-weight:600;">🍔 F&B Attached</div>` : ''}
+            </td>
+            <td>
+                <div style="font-weight:600;color:var(--primary)">₹${b.total_price}</div>
+                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">
+                    Fee: ₹${convFee} • GST: ₹${gst}
+                </div>
+            </td>
+            <td><div style="font-size:0.8rem; line-height:1.2;"><strong style="color:var(--text-main);">${b.theatre_name || 'Cinema'}</strong><br><span class="text-muted">${b.city || 'Delhi'}</span></div></td>
+            <td><div style="font-size:0.8rem; line-height:1.2;">${new Date(b.show_date || b.booked_at).toLocaleDateString()}<br><span class="text-muted">${b.show_time || '10:00 AM'}</span></div></td>
+            <td><span class="badge ${b.status === 'confirmed' ? 'badge-green' : (b.status === 'pending' ? 'badge-orange' : 'badge-red')}">${b.status}</span></td>
+        </tr>`;
+        }).join('')}</tbody></table>`;
+        }
+
+        // ════════════════════ MOVIES ════════════════════
+        async function loadMovies() {
+            const el = document.getElementById('tbl-movies');
+            el.innerHTML = '<div class="loading">Loading…</div>';
+            try {
+                const data = await api(`${API}/movies`);
+                if (!data.length) { el.innerHTML = '<div class="empty">No movies yet</div>'; return; }
+                el.innerHTML = `<table><thead><tr><th>ID</th><th>Title</th><th>Genre</th><th>Rating</th><th>Language</th><th>Duration</th><th>Actions</th></tr></thead>
+            <tbody>${data.map(m => `<tr>
+                <td>${m.movie_id}</td>
+                <td style="font-weight:600">${m.title}</td>
+                <td>${m.genre || '—'}</td>
+                <td><span class="badge badge-purple">⭐ ${m.rating || '—'}</span></td>
+                <td>${m.language || '—'}</td>
+                <td>${m.duration || '—'}</td>
+                <td style="white-space:nowrap">
+                    <button class="btn btn-edit" onclick='editMovie(${JSON.stringify(m)})'>Edit</button>
+                    <button class="btn btn-red" onclick="deleteMovie(${m.movie_id})">Delete</button>
+                </td>
+            </tr>`).join('')}</tbody></table>`;
+            } catch { el.innerHTML = '<div class="err">Failed to load movies</div>'; }
+        }
+
+        let editingId = null;
+        function openModal() {
+            editingId = null;
+            document.getElementById('modal-title').textContent = 'Add New Movie';
+            document.getElementById('modal-save-btn').textContent = 'Save Movie';
+            document.getElementById('movie-form').reset();
+            document.getElementById('movie-modal').classList.add('show');
+        }
+        function closeModal() { document.getElementById('movie-modal').classList.remove('show'); }
+
+        function editMovie(m) {
+            editingId = m.movie_id;
+            document.getElementById('modal-title').textContent = 'Edit Movie';
+            document.getElementById('modal-save-btn').textContent = 'Update Movie';
+            document.getElementById('f-title').value = m.title || '';
+            document.getElementById('f-genre').value = m.genre || '';
+            document.getElementById('f-language').value = m.language || '';
+            document.getElementById('f-duration').value = m.duration || '';
+            document.getElementById('f-rating').value = m.rating || '';
+            document.getElementById('f-censor').value = m.censor || '';
+            document.getElementById('f-synopsis').value = m.synopsis || '';
+            document.getElementById('f-poster').value = m.poster_url || '';
+            document.getElementById('f-trailer').value = m.trailer || '';
+            document.getElementById('f-hero').value = m.hero_image || '';
+            document.getElementById('movie-modal').classList.add('show');
+        }
+
+        async function saveMovie(e) {
+            e.preventDefault();
+            const body = {
+                title: document.getElementById('f-title').value,
+                genre: document.getElementById('f-genre').value,
+                language: document.getElementById('f-language').value,
+                duration: document.getElementById('f-duration').value,
+                rating: document.getElementById('f-rating').value,
+                censor: document.getElementById('f-censor').value,
+                synopsis: document.getElementById('f-synopsis').value,
+                poster_url: document.getElementById('f-poster').value,
+                trailer: document.getElementById('f-trailer').value,
+                hero_image: document.getElementById('f-hero').value
+            };
+            try {
+                const url = editingId ? `${API}/admin/movies/${editingId}` : `${API}/admin/movies`;
+                const method = editingId ? 'PUT' : 'POST';
+                const res = await fetch(url, { method, headers: headers(), body: JSON.stringify(body) });
+                if (res.ok) { closeModal(); loadMovies(); loadDashboard(); }
+                else { const d = await res.json(); alert(d.message || 'Failed to save.'); }
+            } catch { alert('Cannot connect to server.'); }
+        }
+
+        async function deleteMovie(id) {
+            if (!confirm('Delete this movie permanently?')) return;
+            try {
+                const res = await fetch(`${API}/admin/movies/${id}`, { method: 'DELETE', headers: headers() });
+                if (res.ok) { loadMovies(); loadDashboard(); }
+                else { const d = await res.json(); alert(d.message || 'Delete failed.'); }
+            } catch { alert('Cannot connect to server.'); }
+        }
+
+        // ════════════════════ USERS ════════════════════
+        async function loadUsers() {
+            const el = document.getElementById('tbl-users');
+            el.innerHTML = '<div class="loading">Loading…</div>';
+            try {
+                const data = await api(`${API}/admin/users`);
+                if (!data.length) { el.innerHTML = '<div class="empty">No users yet</div>'; return; }
+                el.innerHTML = `<table><thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Joined</th></tr></thead>
+            <tbody>${data.map(u => `<tr>
+                <td>${u.user_id || u.id}</td>
+                <td style="font-weight:600">${u.name}</td>
+                <td>${u.email}</td>
+                <td>${u.phone || '—'}</td>
+                <td>${u.created_at ? new Date(u.created_at).toLocaleDateString() : '—'}</td>
+            </tr>`).join('')}</tbody></table>`;
+            } catch { el.innerHTML = '<div class="err">Failed to load users</div>'; }
+        }
+
+        // ════════════════════ BOOKINGS ════════════════════
+        async function loadBookings() {
+            const el = document.getElementById('tbl-bookings');
+            el.innerHTML = '<div class="loading">Loading…</div>';
+            try {
+                const data = await api(`${API}/admin/bookings`);
+                if (!data.length) { el.innerHTML = '<div class="empty">No bookings yet</div>'; return; }
+                el.innerHTML = `<table><thead><tr><th>ID</th><th>User</th><th>Movie</th><th>Seats</th><th>Amount</th><th>Location</th><th>Showtime</th><th>Status</th></tr></thead>
+            <tbody>${data.map(b => {
+                const tCount = b.seats ? b.seats.split(',').length : 0;
+                const convFee = tCount * 35;
+                const subPlusFee = b.total_price / 1.18;
+                const gst = Math.round(b.total_price - subPlusFee);
+                return `<tr>
+                <td>#${b.booking_id}</td>
+                <td>${b.user_name || b.name || '—'}</td>
+                <td>${b.title || b.movie_title || '—'}</td>
+                <td>
+                    <div>${b.seats || '—'}</div>
+                    ${b.food_items ? `<div style="margin-top:4px; font-size:0.75rem; color:var(--text-muted);">🍕 ${b.food_items}</div>` : ''}
+                </td>
+                <td>
+                    <div style="font-weight:600;color:var(--primary)">₹${b.total_price}</div>
+                    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">
+                        Fee: ₹${convFee} • GST: ₹${gst}
+                    </div>
+                </td>
+                <td><div style="font-size:0.8rem; line-height:1.2;"><strong style="color:var(--text-main);">${b.theatre_name || 'Cinema'}</strong><br><span class="text-muted">${b.city || 'Delhi'}</span></div></td>
+                <td><div style="font-size:0.8rem; line-height:1.2;">${new Date(b.show_date || b.booked_at).toLocaleDateString()}<br><span class="text-muted">${b.show_time || '10:00 AM'}</span></div></td>
+                <td><span class="badge ${b.status === 'confirmed' ? 'badge-green' : (b.status === 'pending' ? 'badge-orange' : 'badge-red')}">${b.status}</span></td>
+            </tr>`;
+            }).join('')}</tbody></table>`;
+            } catch { el.innerHTML = '<div class="err">Failed to load bookings</div>'; }
+        }
+
+        // ════════════════════ PAYMENTS ════════════════════
+        async function loadPayments() {
+            const el = document.getElementById('tbl-payments');
+            el.innerHTML = '<div class="loading">Loading…</div>';
+            try {
+                const data = await api(`${API}/admin/payments`);
+                if (!data.length) { el.innerHTML = '<div class="empty">No payments yet</div>'; return; }
+                el.innerHTML = `<table><thead><tr><th>ID</th><th>User</th><th>Movie</th><th>Amount</th><th>Method</th><th>Status</th><th>Date</th></tr></thead>
+            <tbody>${data.map(p => `<tr>
+                <td>#${p.payment_id || p.id}</td>
+                <td>${p.user_name || p.name || '—'}</td>
+                <td>${p.title || p.movie_title || '—'}</td>
+                <td style="font-weight:600;color:var(--primary)">₹${p.amount || p.total_price || '—'}</td>
+                <td>${p.method || p.payment_method || '—'}</td>
+                <td><span class="badge ${(p.status || '').match(/completed|success/i) ? 'badge-green' : p.status === 'pending' ? 'badge-orange' : 'badge-red'}">${p.status || '—'}</span></td>
+                <td>${(p.created_at || p.paid_at) ? new Date(p.created_at || p.paid_at).toLocaleDateString() : '—'}</td>
+            </tr>`).join('')}</tbody></table>`;
+            } catch { el.innerHTML = '<div class="err">Failed to load payments</div>'; }
+        }
+
+        // ════════════════════ FOOD MENU ════════════════════
+        let allFood = [];
+        async function loadFood() {
+            try {
+                allFood = await api(`${API}/food`); // Use the public food route
+                renderFood();
+            } catch (err) {
+                document.getElementById('tbl-food').innerHTML = '<div class="err">Failed to load food menu</div>';
+            }
+        }
+
+        function renderFood() {
+            const el = document.getElementById('tbl-food');
+            if (!allFood.length) { el.innerHTML = '<div class="empty">No food items found</div>'; return; }
+            el.innerHTML = `<table><thead><tr><th>Icon</th><th>Name</th><th>Description</th><th>Price</th><th>Actions</th></tr></thead>
+        <tbody>${allFood.map(f => `<tr>
+            <td style="font-size:1.5rem;">${f.icon}</td>
+            <td style="font-weight:600;">${f.name}</td>
+            <td>${f.desc_text}</td>
+            <td>₹${f.price}</td>
+            <td>
+                <button class="btn-action btn-edit" onclick="editFood(${f.id})">✏️</button>
+                <button class="btn-action btn-del" onclick="deleteFood(${f.id})">🗑️</button>
+            </td>
+        </tr>`).join('')}</tbody></table>`;
+        }
+
+        function openFoodModal() {
+            document.getElementById('food-form').reset();
+            document.getElementById('f-edit-id').value = '';
+            document.getElementById('food-modal-title').textContent = 'Add New Food';
+            document.getElementById('food-modal-save-btn').textContent = 'Save Food';
+            document.getElementById('food-modal').classList.add('show');
+        }
+
+        function closeFoodModal() {
+            document.getElementById('food-modal').classList.remove('show');
+        }
+
+        function editFood(id) {
+            const f = allFood.find(x => x.id === id);
+            if (!f) return;
+            document.getElementById('f-edit-id').value = f.id;
+            document.getElementById('f-name').value = f.name;
+            document.getElementById('f-price').value = f.price;
+            document.getElementById('f-icon').value = f.icon;
+            document.getElementById('f-desc').value = f.desc_text;
+            
+            document.getElementById('food-modal-title').textContent = 'Edit Food Item';
+            document.getElementById('food-modal-save-btn').textContent = 'Update Food';
+            document.getElementById('food-modal').classList.add('show');
+        }
+
+        async function saveFood(e) {
+            e.preventDefault();
+            const id = document.getElementById('f-edit-id').value;
+            const data = {
+                name: document.getElementById('f-name').value,
+                price: document.getElementById('f-price').value,
+                icon: document.getElementById('f-icon').value,
+                desc_text: document.getElementById('f-desc').value
+            };
+            const method = id ? 'PUT' : 'POST';
+            const url = id ? `${API}/admin/food/${id}` : `${API}/admin/food`;
+
+            try {
+                const r = await fetch(url, { method, headers: headers(), body: JSON.stringify(data) });
+                if (!r.ok) { const err = await r.json(); throw new Error(err.message || 'Failed to save'); }
+                closeFoodModal();
+                loadFood();
+            } catch (err) { alert(err.message); }
+        }
+
+        async function deleteFood(id) {
+            if (!confirm('Are you sure you want to delete this food item?')) return;
+            try {
+                const r = await fetch(`${API}/admin/food/${id}`, { method: 'DELETE', headers: headers() });
+                if (!r.ok) { const err = await r.json(); throw new Error(err.message || 'Failed to delete'); }
+                loadFood();
+            } catch (err) { alert(err.message); }
+        }
+
+        // ── Modal close on overlay click ──
+        document.getElementById('movie-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+        document.getElementById('food-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeFoodModal(); });
+
+        // ── Init ──
+        loadDashboard();
+    </script>
+</body>
+
+</html>

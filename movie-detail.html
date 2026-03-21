@@ -157,25 +157,82 @@
             }
         }
 
+        .detail-actions {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .detail-actions .btn-primary {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            box-shadow: 0 10px 30px rgba(108, 53, 222, 0.3);
+        }
+        .detail-actions .btn-outline {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+        }
+        .dir-text {
+            font-size: 0.9rem;
+            margin-left: 10px;
+        }
+        .dir-text span {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
         @media(max-width: 900px) {
             .detail-content {
                 flex-direction: column;
                 align-items: center;
                 text-align: center;
             }
-
             .detail-poster {
                 flex: 0 0 250px;
                 margin-bottom: 30px;
             }
-
             .meta-tags,
             .cast-grid {
                 justify-content: center;
             }
-
             .synopsis {
-                text-align: left;
+                text-align: center;
+            }
+        }
+
+        @media(max-width: 768px) {
+            .detail-hero {
+                padding-top: 80px;
+            }
+            #detail-title {
+                font-size: 2.2rem !important;
+                margin-bottom: 15px !important;
+            }
+            .meta-tags {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+            }
+            .meta-tag {
+                font-size: 0.75rem;
+                padding: 4px 10px;
+            }
+            .synopsis {
+                font-size: 1rem;
+            }
+            .detail-actions {
+                flex-direction: column;
+                align-items: stretch;
+                width: 100%;
+                gap: 15px;
+            }
+            .detail-actions .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            .dir-text {
+                margin-left: 0;
+                margin-top: 5px;
             }
         }
     </style>
@@ -223,17 +280,14 @@
                     </div>
                 </div>
 
-                <div style="display:flex; gap:20px; align-items:center;">
-                    <button class="btn btn-primary transition-link" id="btn-book"
-                        style="padding: 15px 40px; font-size: 1.2rem; box-shadow: 0 10px 30px rgba(123, 47, 255, 0.4);">
+                <div class="detail-actions">
+                    <button class="btn btn-primary transition-link" id="btn-book">
                         Book Tickets
                     </button>
-                    <button class="btn btn-outline" id="btn-trailer"
-                        style="padding: 15px 30px; font-size: 1.1rem; border-color:var(--accent-color); color:var(--accent-color);">
+                    <button class="btn btn-outline" id="btn-trailer">
                         ▶ Watch Trailer
                     </button>
-                    <span class="text-muted ml-3" style="font-size:0.9rem;">Dir: <span id="director"
-                            style="color:var(--text-main); font-weight:600;">Director Name</span></span>
+                    <span class="text-muted dir-text">Dir: <span id="director">Director Name</span></span>
                 </div>
 
             </div>
@@ -245,9 +299,41 @@
     <script src="data.js"></script>
     <script src="script.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
+        document.addEventListener("DOMContentLoaded", async () => {
             const id = getUrlParameter('id');
-            const movie = movies.find(m => m.id === id);
+            let movie = null;
+
+            // Try fetching from backend API first
+            try {
+                const res = await fetch('http://localhost:5000/api/movies');
+                const data = await res.json();
+                const found = data.find(m => m.movie_id == id);
+                if (found) {
+                    movie = {
+                        id: found.movie_id,
+                        title: found.title,
+                        genre: found.genre,
+                        language: found.language,
+                        rating: found.rating,
+                        poster: found.poster_url,
+                        heroImage: found.poster_url,
+                        synopsis: found.synopsis,
+                        trailer: found.trailer,
+                        duration: found.duration || '2h 15m',
+                        censor: found.censor || 'U/A',
+                        releaseDate: found.release_date || '2024',
+                        director: found.director || 'Unknown',
+                        cast: JSON.parse(found.cast_data || '[]')
+                    };
+                }
+            } catch (e) {
+                console.error("API fetch failed, falling back to local data:", e);
+            }
+
+            // Fallback to local data.js for legacy IDs (e.g. 'm1')
+            if (!movie && typeof movies !== 'undefined') {
+                movie = movies.find(m => m.id === id);
+            }
 
             if (!movie) {
                 document.getElementById('detail-title').innerText = "Movie Not Found";
@@ -284,7 +370,8 @@
             // Buttons
             document.getElementById('btn-book').onclick = () => {
                 document.body.classList.add('page-transitioning');
-                setTimeout(() => window.location.href = `booking.html?id=${movie.id}&type=movie`, 400);
+                const userCity = localStorage.getItem('selectedCity') || 'Delhi';
+                setTimeout(() => window.location.href = `theatre-selection.html?id=${movie.id}&type=movie&city=${userCity}`, 400);
             };
 
             if (movie.trailer) {

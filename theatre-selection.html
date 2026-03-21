@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Theatre & Time - Movie Ticket System</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .page-header {
+            padding: 50px 0 30px;
+            background: linear-gradient(135deg, var(--surface-deep) 0%, #ffffff 100%);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .date-selector {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            overflow-x: auto;
+            padding-bottom: 15px;
+            scrollbar-width: none;
+        }
+        .date-selector::-webkit-scrollbar {
+            display: none;
+        }
+
+        .date-item {
+            padding: 12px 24px;
+            border-radius: 12px;
+            background: #ffffff;
+            text-align: center;
+            cursor: pointer;
+            min-width: 90px;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            border: 1px solid rgba(108, 53, 222, 0.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+            flex-shrink: 0;
+        }
+
+        .date-item.active {
+            background: var(--primary-color);
+            color: #ffffff;
+            border-color: var(--primary-color);
+            box-shadow: 0 8px 20px rgba(108, 53, 222, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .date-item:hover:not(.active) {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(108, 53, 222, 0.1);
+        }
+
+        .date-day {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        .date-date {
+            font-size: 1.4rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .theatre-list {
+            margin-top: 40px;
+        }
+
+        .theatre-card {
+            background: #ffffff;
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .theatre-card:hover {
+            box-shadow: 0 12px 30px rgba(108, 53, 222, 0.08);
+            border-color: rgba(108, 53, 222, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .theatre-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .theatre-badge {
+            font-size: 0.75rem;
+            background: var(--surface-deep);
+            color: var(--primary-color);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .showtime-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .showtime-btn {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 10px 22px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--font-body);
+        }
+
+        .showtime-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            background: var(--surface-deep);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body class="page-transitioning">
+    <div id="global-loader">
+        <div class="spinner"></div>
+    </div>
+    <div id="navbar-container"></div>
+
+    <div class="page-header">
+        <div class="container fade-in-section">
+            <h1 id="movie-title" style="font-size: 2.2rem; color:var(--text-main);">Loading Movie...</h1>
+            <p class="text-muted" style="margin-top:5px; font-size:1rem;">
+                <span id="genre-lang"></span> | <span id="censor"></span>
+            </p>
+
+            <div class="date-selector" id="date-selector">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content container fade-in-section">
+        <div class="theatre-list" id="theatre-list">
+            <!-- Injected via JS -->
+        </div>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const movieId = urlParams.get('id');
+        const userCity = urlParams.get('city') || localStorage.getItem('selectedCity') || 'Delhi';
+
+        let selectedDate = '';
+        let currentMovie = null;
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            // Load Movie Details
+            try {
+                const res = await fetch(`http://localhost:5000/api/movies`);
+                const data = await res.json();
+
+                // Enforce lookup by checking strictly by movie_id
+                let found = data.find(m => m.movie_id == movieId);
+
+                // If id is a legacy fallback (e.g. 'm1'), bridge it against data.js to extract the real API title
+                if (!found && typeof movies !== 'undefined') {
+                    const localMovie = movies.find(m => m.id === movieId);
+                    if (localMovie) found = data.find(m => m.title === localMovie.title);
+                }
+
+                if (found) {
+                    currentItem = found;
+                    document.getElementById('movie-title').innerText = found.title;
+                    document.getElementById('genre-lang').innerText = `${found.genre} • ${found.language}`;
+                    document.getElementById('censor').innerText = found.censor || 'U/A';
+                    document.title = `Book ${found.title} - Movie Ticket System`;
+                } else {
+                    document.getElementById('movie-title').innerText = "Movie Not Found";
+                }
+            } catch (err) {
+                console.error(err);
+            }
+
+            renderDates();
+            renderTheatres();
+        });
+
+        function renderDates() {
+            const container = document.getElementById('date-selector');
+            const today = new Date();
+
+            const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+            let html = '';
+            for (let i = 0; i < 5; i++) {
+                const d = new Date(today);
+                d.setDate(today.getDate() + i);
+
+                const dayStr = i === 0 ? 'TODAY' : (i === 1 ? 'TOMORROW' : days[d.getDay()]);
+                const dateStr = d.getDate();
+                const monthStr = months[d.getMonth()];
+                const fullDateValue = `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`;
+
+                if (i === 0) selectedDate = fullDateValue; // default select today
+
+                html += `
+                    <div class="date-item ${i === 0 ? 'active' : ''}" data-date="${fullDateValue}" onclick="selectDate(this)">
+                        <div class="date-day">${dayStr}</div>
+                        <div class="date-date">${dateStr}</div>
+                        <div style="font-size:0.75rem; color:inherit;">${monthStr}</div>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
+
+        function selectDate(el) {
+            document.querySelectorAll('.date-item').forEach(d => d.classList.remove('active'));
+            el.classList.add('active');
+            selectedDate = el.getAttribute('data-date');
+            renderTheatres(); // re-render or shuffle showtimes internally
+        }
+
+        function renderTheatres() {
+            const container = document.getElementById('theatre-list');
+            const cityTheatres = typeof theatresByCity !== 'undefined' ? theatresByCity[userCity] : [];
+
+            // Updated fallback generic theatres to match the object schema
+            const theatresToRender = (cityTheatres && cityTheatres.length > 0) ? cityTheatres : [
+                { name: `${userCity} Multiplex`, subLocation: "City Center", features: ["M-Ticket", "F&B"] },
+                { name: `PVR Cinemas`, subLocation: "Main Highway Mall", features: ["M-Ticket", "Recliners"] },
+                { name: `INOX Megaplex`, subLocation: "Downtown Square", features: ["M-Ticket", "IMAX"] },
+                { name: `Cinepolis`, subLocation: "Grand Plaza", features: ["M-Ticket", "Dolby Atmos"] }
+            ];
+
+            // Hardcoded mock showtimes
+            const showtimes = [
+                ['10:15 AM', '01:30 PM', '04:45 PM', '08:00 PM', '10:30 PM'],
+                ['09:00 AM', '12:00 PM', '03:15 PM', '07:30 PM'],
+                ['11:00 AM', '02:45 PM', '06:30 PM', '09:45 PM'],
+                ['08:30 AM', '11:45 AM', '05:00 PM', '08:15 PM', '11:00 PM']
+            ];
+
+            let html = `<h3 style="margin-bottom:20px; font-weight:600;">Theatres in ${userCity}</h3>`;
+
+            theatresToRender.forEach((th, idx) => {
+                const times = showtimes[idx % showtimes.length];
+                const fullTheatreName = `${th.name}: ${th.subLocation}`.replace(/'/g, "\\'");
+
+                let timesHtml = times.map(t => `
+                    <button class="showtime-btn" onclick="selectShowtime('${fullTheatreName}', '${t}')">${t}</button>
+                `).join('');
+
+                let badgesHtml = (th.features || []).map(f => `<span class="theatre-badge">${f}</span>`).join('');
+
+                html += `
+                    <div class="theatre-card" style="animation: slideUp 0.3s ease forwards;">
+                        <div style="display:flex; gap:16px;">
+                            <div style="color:#e74c3c; font-size:1.4rem; padding-top:2px;">❤</div> 
+                            <div style="flex:1;">
+                                <div class="theatre-name">${th.name || th}</div>
+                                <div class="text-muted" style="font-size:0.95rem; margin-top:4px;">
+                                    ${th.subLocation || 'City Center'}
+                                </div>
+                                <div style="display:flex; gap:8px; margin-top:12px;">
+                                    ${badgesHtml}
+                                </div>
+                                <div style="font-size:0.8rem; margin-top:16px; color:#e74c3c; display:flex; align-items:center; gap:6px; font-weight:500;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> 
+                                    Non-cancellable
+                                </div>
+                                <div class="showtime-grid" style="margin-top:12px;">
+                                    ${timesHtml}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function selectShowtime(theatreStr, time) {
+            document.body.classList.add('page-transitioning');
+
+            const params = new URLSearchParams({
+                id: movieId,
+                type: 'movie',
+                city: userCity,
+                theatre: theatreStr,
+                date: selectedDate,
+                time: time
+            });
+
+            setTimeout(() => {
+                window.location.href = `booking.html?${params.toString()}`;
+            }, 300);
+        }
+    </script>
+</body>
+
+</html>

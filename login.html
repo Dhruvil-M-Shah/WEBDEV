@@ -41,7 +41,7 @@
 
         .form-control:focus {
             border-color: var(--primary-color) !important;
-            box-shadow: 0 0 10px rgba(74, 92, 47, 0.2) !important;
+            box-shadow: 0 0 10px rgba(108, 53, 222, 0.15) !important;
             background-color: rgba(255, 255, 255, 0.8) !important;
         }
     </style>
@@ -54,7 +54,8 @@
     <div id="navbar-container"></div>
     <div class="auth-wrapper fade-in-section">
         <div class="auth-box">
-            <h2 class="section-heading-decorate" style="margin-bottom: 30px; color: var(--text-main);">Welcome Back</h2>
+            <h2 class="section-heading-decorate" style="margin-bottom: 20px; color: var(--text-main);">Welcome Back</h2>
+            <p style="color:#888; font-size:0.88rem; margin-bottom:24px;">Please sign in to continue</p>
             <form id="login-form">
                 <div class="form-group">
                     <label style="color: var(--ink-brown); font-weight: 700;">Email Address</label>
@@ -83,35 +84,40 @@
     <script src="data.js"></script>
     <script src="script.js"></script>
     <script>
-    document.getElementById('login-form').addEventListener('submit', async function (e) {
-        e.preventDefault();
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const errorMsg = document.getElementById('error-msg');
+        document.getElementById('login-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('error-msg');
 
-        try {
-            const res = await fetch('http://localhost:5000/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            });
+            try {
+                const res = await fetch('http://localhost:5000/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
 
-            const data = await res.json();
+                const data = await res.json();
 
-            if (res.ok) {
-                localStorage.setItem('currentUser', JSON.stringify(data.user));
-                localStorage.setItem('token', data.token);
-                window.location.href = "HOME PAGE.html";
-            } else {
-                errorMsg.innerText = data.message || "Invalid email or password.";
+                if (res.ok) {
+                    localStorage.setItem('currentUser', JSON.stringify(data.user));
+                    localStorage.setItem('token', data.token);
+
+                    // Explicitly remove admin privileges if logging in as normal user
+                    localStorage.removeItem('isAdmin');
+                    localStorage.removeItem('adminToken');
+
+                    window.location.href = 'HOME PAGE.html';
+                } else {
+                    errorMsg.innerText = data.message || "Invalid email or password.";
+                    errorMsg.style.display = "block";
+                }
+            } catch (error) {
+                errorMsg.innerText = "Cannot connect to server. Make sure backend is running.";
                 errorMsg.style.display = "block";
             }
-        } catch (error) {
-            errorMsg.innerText = "Cannot connect to server. Make sure backend is running.";
-            errorMsg.style.display = "block";
-        }
-    });
-</script>
+        });
+    </script>
 </body>
 
 </html>

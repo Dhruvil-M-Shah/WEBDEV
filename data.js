@@ -232,12 +232,61 @@ const categories = {
 };
 
 const theatresByCity = {
-    "Delhi": ["PVR Director's Cut", "INOX IMAX Nehru Place", "Cinepolis VIP DLF"],
-    "Mumbai": ["PVR Luxe Phoenix", "Cinepolis Andheri", "Carnival IMAX"],
-    "Pune": ["PVR Phoenix Marketcity", "Cinepolis Westend", "INOX Bund Garden"],
-    "Bangalore": ["PVR Forum Mall IMAX", "INOX Garuda Mall", "Cinepolis Orion"],
-    "Ahmedabad": ["PVR Acropolis", "Cinepolis AlphaOne"],
-    "Kolkata": ["INOX Quest Mall", "PVR Diamond Plaza"],
-    "Chennai": ["SPI Cinemas Express Avenue", "PVR VR Mall"],
-    "Hyderabad": ["AMB Cinemas", "PVR Inorbit IMAX"]
+    "Delhi": [
+        { name: "PVR Director's Cut", subLocation: "Ambience Mall, Vasant Kunj", features: ["M-Ticket", "F&B", "Recliners"] },
+        { name: "Cinepolis IMAX", subLocation: "DLF Avenue, Saket", features: ["M-Ticket", "IMAX", "Dolby Atmos"] },
+        { name: "INOX Insignia", subLocation: "Epicuria, Nehru Place", features: ["M-Ticket", "F&B", "Laser"] },
+        { name: "PVR Superplex", subLocation: "Logix City Centre, Noida", features: ["M-Ticket", "4DX", "F&B"] }
+    ],
+    "Mumbai": [
+        { name: "PVR ICON", subLocation: "Phoenix Palladium, Lower Parel", features: ["M-Ticket", "F&B", "Recliners"] },
+        { name: "Cinepolis VIP", subLocation: "Nexus Seawoods, Navi Mumbai", features: ["M-Ticket", "Dolby Atmos"] },
+        { name: "INOX Megaplex", subLocation: "Inorbit Mall, Malad", features: ["M-Ticket", "IMAX 3D", "F&B"] },
+        { name: "PVR Maison", subLocation: "Jio World Drive, BKC", features: ["M-Ticket", "Premium", "F&B"] }
+    ],
+    "Pune": [
+        { name: "PVR ICON", subLocation: "Pavillion Mall, S B Road", features: ["M-Ticket", "F&B"] },
+        { name: "Cinepolis IMAX", subLocation: "Westend Mall, Aundh", features: ["M-Ticket", "IMAX"] },
+        { name: "INOX", subLocation: "Elpro City Square, Chinchwad", features: ["M-Ticket", "Dolby 7.1"] }
+    ],
+    "Bangalore": [
+        { name: "PVR Superplex", subLocation: "Orion Mall, Rajajinagar", features: ["M-Ticket", "4DX", "F&B"] },
+        { name: "INOX Megaplex", subLocation: "RMZ Galleria Mall, Yelahanka", features: ["M-Ticket", "IMAX"] },
+        { name: "Cinepolis", subLocation: "Nexus Shantiniketan, Whitefield", features: ["M-Ticket", "Dolby Atmos"] },
+        { name: "PVR Director's Cut", subLocation: "Rex Walk, Brigade Road", features: ["M-Ticket", "Recliners", "F&B"] }
+    ],
+    "Hyderabad": [
+        { name: "AMB Cinemas", subLocation: "Sarath City Capital Mall, Gachibowli", features: ["M-Ticket", "Laser", "F&B"] },
+        { name: "PVR NEXT Galleria", subLocation: "Punjagutta", features: ["M-Ticket", "4DX"] },
+        { name: "Prasads IMAX", subLocation: "Necklace Road", features: ["M-Ticket", "Large Format"] },
+        { name: "Cinepolis", subLocation: "Mantra Mall, Attapur", features: ["M-Ticket", "Dolby 7.1"] }
+    ],
+    "Chennai": [
+        { name: "SPI Cinemas", subLocation: "Palazzo, Forum Vijaya Mall, Vadapalani", features: ["M-Ticket", "Dolby Atmos", "F&B"] },
+        { name: "PVR IMAX", subLocation: "VR Mall, Anna Nagar", features: ["M-Ticket", "IMAX"] },
+        { name: "AGS Cinemas", subLocation: "T. Nagar", features: ["M-Ticket", "4K Projection"] }
+    ],
+    "Kolkata": [
+        { name: "INOX Insignia", subLocation: "Quest Mall, Ballygunge", features: ["M-Ticket", "F&B", "Recliners"] },
+        { name: "PVR IMAX", subLocation: "South City Mall", features: ["M-Ticket", "IMAX 3D"] },
+        { name: "Cinepolis", subLocation: "Acropolis Mall, Kasba", features: ["M-Ticket", "Dolby 7.1"] }
+    ],
+    "Ahmedabad": [
+        { name: "PVR", subLocation: "Acropolis Mall, SG Highway", features: ["M-Ticket", "F&B"] },
+        { name: "Cinepolis", subLocation: "Alpha One Mall, Vastrapur", features: ["M-Ticket", "Dolby Atmos"] },
+        { name: "NY Cinemas", subLocation: "Aamrakunj, Motera", features: ["M-Ticket", "Premium"] }
+    ],
+    "Jaipur": [
+        { name: "INOX", subLocation: "Crystal Palm, Bais Godam", features: ["M-Ticket", "F&B"] },
+        { name: "Raj Mandir Cinema", subLocation: "Bhagwant Das Road", features: ["M-Ticket", "Single Screen Heritage"] },
+        { name: "Cinepolis", subLocation: "Triton Mall, Jhotwara", features: ["M-Ticket", "Dolby 7.1"] }
+    ],
+    "Indore": [
+        { name: "PVR", subLocation: "Treasure Island Mall, MG Road", features: ["M-Ticket", "Dolby Atmos"] },
+        { name: "INOX", subLocation: "C21 Mall, AB Road", features: ["M-Ticket", "F&B"] }
+    ],
+    "Goa": [
+        { name: "INOX", subLocation: "Osia Multiplex, Margao", features: ["M-Ticket", "F&B"] },
+        { name: "PVR", subLocation: "Mall De Goa, Porvorim", features: ["M-Ticket", "Dolby 7.1"] }
+    ]
 };

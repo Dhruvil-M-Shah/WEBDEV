@@ -246,7 +246,8 @@
                 <p class="featured-desc">A modern-day avatar of Vishnu, a Hindu god, who is believed to have descended
                     to earth to protect the world from evil forces. An epic sci-fi journey merging myth and future.</p>
                 <div class="featured-actions">
-                    <button class="btn btn-primary" onclick="window.location.href='booking.html?id=1&type=movie'"
+                    <button class="btn btn-primary"
+                        onclick="const c = localStorage.getItem('selectedCity') || 'Delhi'; window.location.href='theatre-selection.html?id=1&type=movie&city='+c"
                         style="font-size: 1rem; padding: 12px 28px;">Book Tickets</button>
                     <button class="btn btn-outline featured-btn-outline"
                         onclick="openTrailer(event, 'https://www.youtube.com/embed/y1QXuQvngG8')"
@@ -284,7 +285,7 @@
                             <span class="hero-tag">${featured.censor}</span>
                         </div>
                         <div class="hero-actions" style="display:flex; gap:15px; margin-top:20px;">
-                            <button onclick="window.location.href='booking.html?id=${featured.id}&type=movie'" class="btn btn-primary transition-link" style="padding: 15px 35px; font-size:1rem;">Book Tickets</button>
+                            <button onclick="const c = localStorage.getItem('selectedCity') || 'Delhi'; window.location.href='theatre-selection.html?id=${featured.id}&type=movie&city='+c" class="btn btn-primary transition-link" style="padding: 15px 35px; font-size:1rem;">Book Tickets</button>
                             <button class="btn btn-outline" style="padding: 15px 35px;" onclick="openTrailer(event, '${featured.trailer}')">Watch Trailer</button>
                         </div>
                     </div>
