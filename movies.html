@@ -148,9 +148,9 @@
                 document.querySelector('.genre-btn[data-genre="All"]').classList.add('active');
 
                 if (query.length > 0) {
-                    fetchMovies(`http://localhost:5000/api/movies/search?q=${encodeURIComponent(query)}`);
+                    fetchMovies(`https://webdev-05o3.onrender.com/api/movies/search?q=${encodeURIComponent(query)}`);
                 } else {
-                    fetchMovies("http://localhost:5000/api/movies");
+                    fetchMovies("https://webdev-05o3.onrender.com/api/movies");
                 }
             });
 
@@ -159,11 +159,11 @@
             const searchParam = urlParams.get('search');
             if (searchParam) {
                 searchInput.value = searchParam;
-                fetchMovies(`http://localhost:5000/api/movies/search?q=${encodeURIComponent(searchParam)}`);
+                fetchMovies(`https://webdev-05o3.onrender.com/api/movies/search?q=${encodeURIComponent(searchParam)}`);
                 // Clean URL visually (optional): history.replaceState(null, '', 'movies.html');
             } else {
                 // Initial fetch if no search params
-                fetchMovies("http://localhost:5000/api/movies");
+                fetchMovies("https://webdev-05o3.onrender.com/api/movies");
             }
 
             // Search Input Logic
@@ -177,9 +177,9 @@
                 const query = e.target.value.trim();
                 searchTimeout = setTimeout(() => {
                     if (query.length > 0) {
-                        fetchMovies(`http://localhost:5000/api/movies/search?q=${encodeURIComponent(query)}`);
+                        fetchMovies(`https://webdev-05o3.onrender.com/api/movies/search?q=${encodeURIComponent(query)}`);
                     } else {
-                        fetchMovies("http://localhost:5000/api/movies");
+                        fetchMovies("https://webdev-05o3.onrender.com/api/movies");
                     }
                 }, 300);
             });
@@ -199,9 +199,9 @@
 
                     const genre = btn.getAttribute('data-genre');
                     if (genre === 'All') {
-                        fetchMovies("http://localhost:5000/api/movies");
+                        fetchMovies("https://webdev-05o3.onrender.com/api/movies");
                     } else {
-                        fetchMovies(`http://localhost:5000/api/movies/filter?genre=${encodeURIComponent(genre)}`);
+                        fetchMovies(`https://webdev-05o3.onrender.com/api/movies/filter?genre=${encodeURIComponent(genre)}`);
                     }
                 });
             });

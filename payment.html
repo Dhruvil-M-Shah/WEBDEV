@@ -338,7 +338,7 @@
     const activeMethod = document.querySelector('.pay-method.active').innerText.includes('UPI') ? 'upi' : 'card';
 
     try {
-        const res = await fetch('http://localhost:5000/api/payments', {
+        const res = await fetch('https://webdev-05o3.onrender.com/api/payments', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

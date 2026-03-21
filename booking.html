@@ -191,7 +191,7 @@
             // Find item
             if (type === 'movie') {
                 try {
-                    const res = await fetch(`http://localhost:5000/api/movies`);
+                    const res = await fetch(`https://webdev-05o3.onrender.com/api/movies`);
                     const data = await res.json();
 
                     let found = data.find(m => m.movie_id == id);
@@ -276,7 +276,7 @@
             // Fetch and Map Booked Seats
             if (type === 'movie') {
                 try {
-                    const seatsRes = await fetch(`http://localhost:5000/api/seats/${id}`);
+                    const seatsRes = await fetch(`https://webdev-05o3.onrender.com/api/seats/${id}`);
                     if (seatsRes.ok) {
                         const bookedSeatsArray = await seatsRes.json();
 

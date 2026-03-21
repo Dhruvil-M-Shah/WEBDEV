@@ -205,7 +205,7 @@
         document.addEventListener('DOMContentLoaded', async () => {
             renderHeaderInfo();
             try {
-                const res = await fetch('http://localhost:5000/api/food');
+                const res = await fetch('https://webdev-05o3.onrender.com/api/food');
                 if (!res.ok) throw new Error("API not ok");
                 const data = await res.json();
                 if (Array.isArray(data) && data.length > 0) {
@@ -375,7 +375,7 @@
             const finalTotal = pendingCheckout.seatTotal + fSubtotal;
 
             try {
-                const res = await fetch('http://localhost:5000/api/bookings', {
+                const res = await fetch('https://webdev-05o3.onrender.com/api/bookings', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

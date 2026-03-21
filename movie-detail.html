@@ -305,7 +305,7 @@
 
             // Try fetching from backend API first
             try {
-                const res = await fetch('http://localhost:5000/api/movies');
+                const res = await fetch('https://webdev-05o3.onrender.com/api/movies');
                 const data = await res.json();
                 const found = data.find(m => m.movie_id == id);
                 if (found) {

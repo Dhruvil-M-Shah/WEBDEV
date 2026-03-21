@@ -178,7 +178,7 @@
         document.addEventListener("DOMContentLoaded", async () => {
             // Load Movie Details
             try {
-                const res = await fetch(`http://localhost:5000/api/movies`);
+                const res = await fetch(`https://webdev-05o3.onrender.com/api/movies`);
                 const data = await res.json();
 
                 // Enforce lookup by checking strictly by movie_id
